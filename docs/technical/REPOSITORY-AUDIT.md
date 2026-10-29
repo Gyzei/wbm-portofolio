@@ -13,5 +13,5 @@ Audit of application entry points and main persistence paths at Git revision `78
 
 ## Verification and limits
 - `interactive-store-test.php`: 22 checks passed; `setup-admin-test.php`: four invalid-input checks passed; `interactive-media-path-test.php`: path boundary checks passed. PHP syntax for `admin.php` and JavaScript syntax for `dashboard/interactive.js` passed.
-- No authenticated browser regression, live-database writes, full upload/deletion end-to-end, deployment configuration, or load/security penetration test was performed. Historical disposable-database persistence results are in [[docs/technical/TESTING-AND-SETUP]].
-- Follow-up audit rechecked the main handlers and reran the same no-database checks; the new upload failure finding is based on code inspection, not an induced database failure.
+- During the original audit, no authenticated browser regression, live-database writes, full upload/deletion end-to-end, deployment configuration, or load/security penetration test was performed. Later checks are described in the linked feature notes and [[docs/technical/TESTING-AND-SETUP]].
+- The upload failure finding was identified by inspection and subsequently tested with induced insert errors on temporary tables in a disposable database.

@@ -3,62 +3,34 @@
   "search": "",
   "showTags": false,
   "showAttachments": true,
-  "hideUnresolved": false,
+  "hideUnresolved": true,
   "showOrphans": false,
   "collapse-color-groups": false,
   "colorGroups": [
     {
-      "query": "path:docs/architecture  ",
-      "color": {
-        "a": 1,
-        "rgb": 1114367
-      }
-    },
-    {
-      "query": "path:docs/design  ",
-      "color": {
-        "a": 1,
-        "rgb": 16771584
-      }
-    },
-    {
-      "query": "path:docs/PRD  ",
-      "color": {
-        "a": 1,
-        "rgb": 16749824
-      }
-    },
-    {
-      "query": "path:docs/decisions  ",
-      "color": {
-        "a": 1,
-        "rgb": 14701261
-      }
-    },
-    {
-      "query": "path:docs/features  ",
-      "color": {
-        "a": 1,
-        "rgb": 9102848
-      }
-    },
-    {
-      "query": "path:docs/technical  ",
+      "query": "file:index.md",
       "color": {
         "a": 1,
         "rgb": 16711680
       }
     },
     {
-      "query": "path:docs  ",
+      "query": "file:README",
       "color": {
         "a": 1,
-        "rgb": 46079
+        "rgb": 65331
+      }
+    },
+    {
+      "query": "file:AI_CONTEXT.md",
+      "color": {
+        "a": 1,
+        "rgb": 6740479
       }
     }
   ],
   "collapse-display": false,
-  "showArrow": false,
+  "showArrow": true,
   "textFadeMultiplier": 0,
   "nodeSizeMultiplier": 1,
   "lineSizeMultiplier": 1,
@@ -67,6 +39,6 @@
   "repelStrength": 10,
   "linkStrength": 1,
   "linkDistance": 250,
-  "scale": 0.25883865621815266,
+  "scale": 0.3628873693011919,
   "close": true
 }

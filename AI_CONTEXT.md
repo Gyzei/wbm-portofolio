@@ -19,12 +19,8 @@ Interactive video supports separate scenarios; persistence passed 27 isolated-da
 - Run persistence tests only against isolated `portofolio_review_*` databases.
 
 ## References
-- Design: [[docs/design/DESIGN]]
-- Architecture: [[docs/architecture/ARCHITECTURE]]
-- Decisions: [[docs/decisions/DECISIONS]]
-- Docs index: [[README]]
-- Feature map: [[docs/features/interactive-video-draft]]
-- Testing: [[docs/technical/TESTING-AND-SETUP]]
+- Root entrypoint: [[README]]
+- Docs index: [[docs/INDEX]]
 
 ## Session Handoff
 Use Laragon PHP's absolute path in testing notes. Never run provisioning/persistence tests against the live database.
