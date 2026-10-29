@@ -1,6 +1,6 @@
 ---
 name: second-memory
-description: Use and maintain the project's Obsidian Second Memory. Read AI_CONTEXT.md before project work, track the current command, document features by linking existing project code files directly in Obsidian notes, keep README.md only at root, and synchronize memory.
+description: Use and maintain the project's Obsidian Second Memory. Read AI_CONTEXT.md before project work, track the current command, document features with links to existing source files, maintain an INDEX.md in every docs directory and link section indexes from root README.md, and synchronize memory.
 compatibility: opencode
 metadata:
   purpose: project-memory
@@ -61,8 +61,8 @@ Immediately on invocation:
 1. Identify the project root. Do not assume the current directory is the root if repository structure indicates otherwise.
 2. Read `AI_CONTEXT.md` at the project root first.
 3. If it does not exist, initialize a minimal memory structure using the rules below.
-4. Read the project-root `README.md` if present. No non-root document may be named `README.md`.
-5. Follow only the links relevant to the current request. Do not load every document by default.
+4. Read the project-root `README.md` if present; use its links to `docs/INDEX.md` and the relevant `docs/<section>/INDEX.md` to navigate documentation. No non-root document may be named `README.md`.
+5. Follow only the links relevant to the current request; avoid loading every section index by default. Do not load every document by default.
 6. Read relevant PRD, design, architecture, decision, technical, and skill references as needed.
 7. Inspect current source/config/tests when the task depends on actual implementation state. Memory can be stale; verify important claims against the project.
 
@@ -74,7 +74,8 @@ Always read:
 - `AI_CONTEXT.md`
 
 Read only as needed:
-- Root `README.md` (the documentation index)
+- Root `README.md` (the entrypoint to documentation section indexes)
+- The relevant `docs/<section>/INDEX.md` (and `docs/INDEX.md` if needed)
 - The specific PRD/design/architecture/decision/technical notes related to the task
 - Relevant source files, tests, configuration, and relevant skill references
 
@@ -92,27 +93,37 @@ Use existing project conventions when present. Otherwise, use:
 
 ```text
 project-root/
-├── README.md               # sole README.md; documentation index
+├── README.md                 # only README; links to docs section indexes
 ├── AI_CONTEXT.md
-├── ACTIVE_TASKS.md          # temporary checklist for the current command
+├── ACTIVE_TASKS.md            # temporary checklist for the current command
 ├── docs/
+│   ├── INDEX.md               # overview linking to existing section indexes
 │   ├── PRD/
+│   │   ├── INDEX.md
 │   │   └── PRD.md
 │   ├── design/
+│   │   ├── INDEX.md
 │   │   └── DESIGN.md
 │   ├── architecture/
+│   │   ├── INDEX.md
 │   │   └── ARCHITECTURE.md
 │   ├── decisions/
+│   │   ├── INDEX.md
 │   │   └── DECISIONS.md
-│   ├── features/             # one documentation note per implemented feature
+│   ├── features/
+│   │   ├── INDEX.md
+│   │   └── release-upload.md    # example: only if the feature exists
 │   ├── technical/
+│   │   └── INDEX.md
 │   ├── research/
+│   │   └── INDEX.md
 │   └── archive/
-└── skills/                  # if present in this project's vault
+│       └── INDEX.md
+└── skills/                    # if present in this project's vault
     └── [read-only references]
 ```
 
-Do not create empty or speculative documents merely to fill the structure. Create files only when evidence or actual project needs justify them. Preserve existing useful documents and filenames where possible.
+The tree illustrates index placement, not a mandate to create every folder. **Every existing directory within `docs/` (including nested directories and `docs/` itself) must have an `INDEX.md`.** Do not create empty or speculative directories just to fill this example. Create an index when its containing documentation directory exists, and preserve existing useful documents and filenames where possible.
 
 ## 4. Main file contract: AI_CONTEXT.md
 
@@ -139,7 +150,8 @@ Treat this as the single entry point for future sessions. It should contain only
 - Design: [[docs/design/DESIGN]]
 - Architecture: [[docs/architecture/ARCHITECTURE]]
 - Decisions: [[docs/decisions/DECISIONS]]
-- Docs index: [[README]]
+- Docs index: [[docs/INDEX]]
+- Root entrypoint: [[README]]
 - Skills: `skills/` (read-only, if present)
 
 ## Session Handoff
@@ -188,7 +200,7 @@ Use this workflow:
 2. **Choose the canonical destination** for each fact; avoid duplication.
 3. **Update detailed documentation first** when appropriate.
 4. **Update `AI_CONTEXT.md`** with only the current state, immediate TODOs, critical constraints, references, and handoff.
-5. **Repair links/indexes** if files were created, renamed, moved, or removed.
+5. **Maintain the index hierarchy**: update the affected folder's `INDEX.md`, parent indexes when subfolders change, `docs/INDEX.md`, and root `README.md` links to existing section indexes. Repair links if files are created, renamed, moved, or removed.
 6. **Validate** that the notes accurately reflect the resulting project state.
 
 Do not update every document after every trivial edit. Update only what the change affects. Do not postpone important memory updates until the chat is about to end.
@@ -201,7 +213,9 @@ If file writes fail or permissions are unavailable, explain what remains unsaved
 
 Use the existing document if one already serves the purpose. Otherwise:
 
-- Root `README.md`: the **only** file named `README.md` in the project, serving as the short index of existing documents and their purposes. Do not create a `README.md` in `docs/`, feature folders, or any other subdirectory. If a separate non-root index is required, use a descriptive name such as `INDEX.md` instead.
+- Root `README.md`: the **only** file named `README.md` in the project. It is a short documentation entrypoint and **must link to each existing top-level `docs/<section>/INDEX.md`**, optionally alongside `docs/INDEX.md`. Do not replace these section links with only direct links to individual feature or topic notes.
+- `docs/INDEX.md`: documentation overview linking the indexes for existing immediate subdirectories.
+- `docs/**/INDEX.md`: **required in every existing directory under `docs/`, at any nesting depth**. Each folder index briefly explains the folder and links to its existing documents and immediate child-folder indexes. Never call these files `README.md`. If a folder contains no documents yet, keep the index concise and truthful.
 - `docs/PRD/PRD.md`: objectives, scope, functional/non-functional requirements, user workflows, acceptance criteria, exclusions, and assumptions.
 - `docs/design/DESIGN.md`: component design, behavior, data flows, algorithms, constraints, and trade-offs.
 - `docs/architecture/ARCHITECTURE.md`: verified system structure, module responsibilities, dependencies, integration boundaries, and execution/data flows.
@@ -212,6 +226,15 @@ Use the existing document if one already serves the purpose. Otherwise:
 
 - `docs/features/`: one focused document per implemented or materially changed feature, named with a stable descriptive filename (for example, `docs/features/release-upload.md`). Each feature document should describe its purpose, user-visible behavior, relevant inputs/configuration, important implementation details, dependencies or integrations, edge cases/limitations, and verification/tests where known. Include only sections supported by actual project evidence; label unknowns clearly.
 
+### Folder indexes and README navigation
+
+- Each existing folder inside `docs/`—including `docs/` itself and any deeper subfolder—has its **own `INDEX.md`**. When creating a documentation folder, create its index in the same change. When encountering an existing folder without an index, add one based on actual contents.
+- A folder `INDEX.md` lists and briefly describes its actual documents and the `INDEX.md` files of its immediate child directories. Use project-relative Obsidian wikilinks, for example `[[docs/features/release-upload]]` in `docs/features/INDEX.md` and `[[docs/features/INDEX]]` in `docs/INDEX.md`.
+- The **root `README.md` links directly to each existing top-level folder index**, for example `[[docs/PRD/INDEX]]`, `[[docs/design/INDEX]]`, and `[[docs/features/INDEX]]`. It may also link to `[[docs/INDEX]]`, but that aggregate index does not replace links to the individual section indexes.
+- Navigational flow: `README.md` → section `INDEX.md` → topic/feature documentation. If nested sections exist, traverse their indexes rather than listing every leaf document in the root README.
+- Add, rename, move, and delete documentation with matching updates to the affected folder index, parent indexes (if section folders change), and root README links when top-level sections change. Only point to files that exist, and check links for accuracy.
+- Keep indexes compact; they are navigation, not duplicated summaries. Do not create speculative sections or empty folders just to satisfy a directory template.
+
 ### Feature documentation rule
 
 Whenever a feature is added, changed, or fixed in a way that affects its behavior:
@@ -220,7 +243,7 @@ Whenever a feature is added, changed, or fixed in a way that affects its behavio
 2. Document actual behavior separately from intended behavior; do not claim tests passed unless they were run.
 3. Add useful Obsidian links to related requirements, design, architecture, decisions, and technical setup notes.
 4. In the feature note itself, **mention or attach existing project code files by linking to their current paths** (see the rules below). Do not copy files into an attachment folder or put code dumps in `AI_CONTEXT.md`.
-5. Update root `README.md` so the feature document is discoverable.
+5. Add/update the feature entry in `docs/features/INDEX.md` (and any intermediate nested indexes). Keep the root `README.md` linked to `docs/features/INDEX.md`; the root README need not list each feature separately.
 6. Update `AI_CONTEXT.md` only with compact current state, critical constraints, references, and the next actionable handoff—not the full feature description.
 7. If several features are changed, document each feature separately unless they form one cohesive feature with a shared lifecycle and clear reason to keep them together.
 8. Do not create empty feature documents for planned or speculative features. For plans not yet implemented, document them in the relevant PRD/design note instead.
@@ -247,7 +270,7 @@ For each feature, mention or attach **the code files that already exist in the p
 
 ### README naming rule
 
-`README.md` is allowed **only at the project root**. The root `README.md` doubles as the documentation index. For any non-root documentation landing page, use a descriptive filename such as `INDEX.md`, `OVERVIEW.md`, or a topic-specific name—never any case variation of `README.md`. When working in a repository that already has non-root README files, inspect and preserve their content, migrate or rename them safely when appropriate, and repair references. Never silently delete existing documentation.
+`README.md` is allowed **only at the project root**. The root `README.md` is the entrypoint linking to **every existing top-level `docs/<section>/INDEX.md`**. All `docs/` directories use `INDEX.md` for their local index, never any case variation of `README.md`. When working in a repository that already has non-root README files, inspect and preserve their content, migrate or rename them safely when appropriate, and repair references. Never silently delete existing documentation.
 
 
 Separate intended behavior from implemented behavior. Do not invent missing requirements, rationale, test results, or completion status. Label consequential unknowns as `Unknown`, `Unverified`, or `Needs confirmation`.
@@ -261,7 +284,7 @@ Use standard Obsidian links, for example `[[docs/PRD/PRD]]` or `[[docs/technical
 - Link related requirements, design, decisions, and technical notes when the relationship is useful.
 - Prefer stable, descriptive filenames.
 - Check that linked files exist; identify planned links clearly.
-- Update affected links and root `README.md` when moving or renaming documents or linked project source files.
+- Update affected folder `INDEX.md` files and their parents when documents or directories change; keep root `README.md` linked to existing section indexes. Repair feature code links when original project files move or are renamed.
 - Avoid link spam and circular references with no navigational value.
 - Prefer relative paths and the existing vault's naming conventions.
 
@@ -283,7 +306,7 @@ If `AI_CONTEXT.md` or supporting memory files are missing or incomplete:
 4. Separate confirmed facts from inferences and unknowns.
 5. Create/update only justified memory files, preserving useful existing content.
 6. Populate the TODO list only with confirmed actionable unfinished tasks, or concrete validation tasks for meaningful uncertainties.
-7. Add meaningful Obsidian links and update root `README.md`; do not create any non-root README files.
+7. Ensure `docs/INDEX.md` and each existing docs subdirectory's `INDEX.md` are present and list actual contents; link existing top-level section indexes from root `README.md`. Do not create non-root README files.
 8. Keep `AI_CONTEXT.md` minimal.
 9. Do not change application source code as part of memory initialization unless explicitly requested.
 10. Do not commit, push, or perform destructive operations unless explicitly requested.
@@ -309,11 +332,13 @@ Every invocation must finish by checking memory synchronization. Before consider
 
 - [ ] `AI_CONTEXT.md` reflects the actual current state and is as compact as possible (aim for 50–120 words).
 - [ ] `ACTIVE_TASKS.md` was used to track the current command; clear its command-specific checklist only after all tasks are completed and verified, or retain it if unfinished/blocked.
-- [ ] Every implemented or materially changed feature has an appropriate dedicated document under `docs/features/`, and root `README.md` links to it.
+- [ ] Every implemented or materially changed feature has a dedicated document under `docs/features/`, listed in `docs/features/INDEX.md`; root `README.md` links to that section index.
 - [ ] TODO contains only actionable unfinished tasks.
 - [ ] Detailed facts are stored in the correct document.
-- [ ] Obsidian references to existing project code files in `docs/features/` resolve without creating attachment folders or copies; the root documentation index is accurate.
-- [ ] The only `README.md` (case-insensitive) is at project root; any non-root indexes have different names.
+- [ ] Obsidian references to existing project code files in `docs/features/` resolve without creating attachment folders or copies.
+- [ ] Each existing `docs/` directory has its own `INDEX.md`, linking real documents and immediate child-folder indexes; `docs/INDEX.md` is accurate.
+- [ ] Root `README.md` links directly to each existing top-level `docs/<section>/INDEX.md`; no broken index paths remain.
+- [ ] The only `README.md` (case-insensitive) is at project root; all documentation folder indexes are named `INDEX.md`.
 - [ ] `skills/` remains unchanged.
 - [ ] No secrets were copied into documentation.
 - [ ] The main file remains compact.
