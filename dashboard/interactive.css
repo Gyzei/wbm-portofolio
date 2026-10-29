@@ -1,4 +1,21 @@
 /* The story editor shares the CMS palette, but uses a denser workspace. */
+.iv-scenarios{padding:32px;max-width:1000px;color:#17384d}
+.iv-scenarios h2{margin:0 0 10px;font-size:28px}
+.iv-scenarios>p{margin:0 0 28px;line-height:1.6;color:#597280}
+.iv-scenario{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px;background:#fff;border-radius:8px}
+.iv-scenario h3{margin:0 0 8px;overflow-wrap:anywhere;font-size:20px}
+.iv-scenario p{margin:0;color:#597280;font-size:13px}
+.iv-scenario .iv-button{flex-shrink:0}
+.iv-fullscreen .shell{display:block;min-height:100dvh}
+.iv-fullscreen .sidebar,.iv-fullscreen .topbar{display:none}
+.iv-fullscreen .shell>main{width:100%;max-width:none;margin:0;padding:0}
+.iv-fullscreen .iv-editor{height:100dvh;display:flex;flex-direction:column}
+.iv-fullscreen .iv-project-bar{flex-shrink:0;padding:14px 20px}
+.iv-fullscreen .iv-workspace{flex:1;min-height:0;height:auto;max-height:none}
+@media(min-width:761px){.iv-fullscreen .iv-canvas-column{height:100%;min-height:0}.iv-fullscreen .iv-library{max-height:none}}
+.iv-fullscreen .iv-help{flex-shrink:0}
+.iv-fullscreen .iv-status{margin:4px 20px;min-height:0}
+@media(max-width:760px){.iv-scenarios{padding:20px 16px}.iv-scenario{align-items:flex-start;flex-direction:column}.iv-fullscreen .iv-editor{height:auto;min-height:100dvh}.iv-fullscreen .iv-project-bar{padding:12px 16px}.iv-fullscreen .iv-canvas-column{height:70dvh}}
 .interactive-page{--iv-blue:#24779d;--iv-text:#17384d;--iv-muted:#597280;--iv-line:#dce6eb;--iv-danger:#a93532;background:#f4f7f9}
 .interactive-page .sidebar{width:210px}
 .interactive-page .topbar{position:relative;top:0;width:100%;max-width:none;margin:0;border:0;border-bottom:1px solid var(--iv-line);border-radius:0;padding:18px 28px;box-shadow:none}
@@ -207,7 +224,6 @@
 .iv-help b{color:#3c6274;font-weight:600}
 .iv-status{min-height:20px;margin:14px 20px 0;color:#287253;font-size:12px;overflow-wrap:anywhere}
 .iv-status.iv-error{color:var(--iv-danger);font-weight:500}
-#iv-download{margin:0 20px 14px;font-size:11px}
 .iv-preview-dialog,.iv-confirm-dialog{width:min(780px,calc(100% - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #cddde6;border-radius:12px;padding:24px;color:#17384d;background:#fff}
 .iv-preview-dialog::backdrop,.iv-confirm-dialog::backdrop{background:#112c3cc4}
 .iv-preview-head{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px}

@@ -1,5 +1,10 @@
 # Decisions
 
+#### CLI-only first administrator provisioning
+- Web requests initialize the users schema but never create an account. `setup-admin.php` accepts credentials through environment variables, rejects invalid input, and refuses existing installations under a table lock.
+- Existing users and passwords remain unchanged; old/default credentials must be changed through authenticated Settings before deployment.
+- Evidence: `auth.php`, `setup-admin.php`, and `tests/setup-admin-test.php`. Invalid-input checks and web denial were tested; successful setup on an empty disposable database is unverified.
+
 #### Single shared administrator draft
 - Status: Accepted (verified implementation).
 - Context: The current admin login accepts the primary account; the editor maintains one project-wide draft.

@@ -12,7 +12,7 @@ document.getElementById('run').addEventListener('click', async () => {
     id, title:id.toUpperCase(), mediaId:null, x:80 + index * 320, y:80, choices:[],
   }))};
   try {
-    const url = new URL('../admin.php?page=interactive', location.href);
+    const url = new URL('../admin.php?page=interactive&scenario=1', location.href);
     const template = new DOMParser().parseFromString(await (await fetch(url)).text(), 'text/html');
     if (!template.getElementById('iv-data')) throw new Error('Login ke dashboard terlebih dahulu.');
     async function mount(graph, media = []) {
@@ -333,10 +333,18 @@ document.getElementById('run').addEventListener('click', async () => {
       sendWire(moving, 'pointercancel', to);
     } finally { moving.setPointerCapture = movingCapture; }
     await new Promise(resolve => setTimeout(resolve, 0));
-    get('scene-x').value = '5000'; get('scene-x').dispatchEvent(new win.Event('change'));
+    const distantNode = node('a'), distantCapture = distantNode.setPointerCapture;
+    distantNode.setPointerCapture = () => {};
+    try {
+      const from = center(distantNode.querySelector('.iv-node-handle'));
+      sendWire(distantNode.querySelector('.iv-node-handle'), 'pointerdown', from);
+      sendWire(distantNode, 'pointermove', {x:from.x + 5000 * scale(), y:from.y});
+      sendWire(distantNode, 'pointerup', {x:from.x + 5000 * scale(), y:from.y});
+    } finally { distantNode.setPointerCapture = distantCapture; }
+    await new Promise(resolve => setTimeout(resolve, 0));
     const expandedWidth = parseFloat(get('world').style.width);
     check(expandedWidth > 5000, 'Moving a scene far away must expand the canvas automatically.');
-    get('scene-x').value = '80'; get('scene-x').dispatchEvent(new win.Event('change'));
+    get('undo').click();
     check(parseFloat(get('world').style.width) >= expandedWidth, 'Moving a scene back must not collapse the expanded workspace.');
 
     doc = await mount({title:'Media drop', startId:null, scenes:[]}, [{id:77, fileName:'fixture.webm', fileAddress:'data:video/webm;base64,'}]); win = frame.contentWindow;

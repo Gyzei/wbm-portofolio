@@ -1,10 +1,10 @@
 <?php
-// Session dan penyediaan akun administrator awal.
+// Session dan skema akun; administrator awal dibuat melalui setup-admin.php (CLI).
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once 'koneksi.php';
+require_once __DIR__ . '/koneksi.php';
 
 $conn->query("CREATE TABLE IF NOT EXISTS users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -13,24 +13,9 @@ $conn->query("CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-$userCountResult = $conn->query("SELECT COUNT(*) AS total FROM users");
 $displayNameColumn = $conn->query("SHOW COLUMNS FROM users LIKE 'display_name'");
 if ($displayNameColumn && $displayNameColumn->num_rows === 0) {
     $conn->query("ALTER TABLE users ADD COLUMN display_name VARCHAR(150) NOT NULL DEFAULT '' AFTER username");
-}
-$displayNameColumn = $conn->query("SHOW COLUMNS FROM users LIKE 'display_name'");
-if ($displayNameColumn && $displayNameColumn->num_rows === 0) {
-    $conn->query("ALTER TABLE users ADD COLUMN display_name VARCHAR(150) NOT NULL DEFAULT '' AFTER username");
-}
-$userCount = $userCountResult ? intval($userCountResult->fetch_assoc()['total']) : 0;
-
-if ($userCount === 0) {
-    $defaultUsername = 'admin';
-    $defaultPasswordHash = password_hash('admin123', PASSWORD_DEFAULT);
-    $stmt = $conn->prepare("INSERT INTO users (username, password_hash) VALUES (?, ?)");
-    $stmt->bind_param("ss", $defaultUsername, $defaultPasswordHash);
-    $stmt->execute();
-    $stmt->close();
 }
 
 function primaryAccountId(): int {

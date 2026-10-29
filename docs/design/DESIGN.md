@@ -1,6 +1,10 @@
 # Product and Editor Design
 
 ## Interactive editor
+The sidebar entry opens `admin.php?page=interactive`, a scenario selection page (`dashboard/interactive-menu.php`). The existing shared scenario opens at `admin.php?page=interactive&scenario=1` in a full-canvas workspace without dashboard navigation; a back link returns to selection. This changes navigation only, not the single-draft persistence model.
+
+The filled “Unduh salinan draft” button sits beside “+ Scene” in the canvas toolbar and exports the existing JSON backup.
+
 `dashboard/interactive.php` supplies the editor shell and serializes graph/media/revision/session-token data into `#iv-data`. `dashboard/interactive.js` owns graph state, inspector controls, canvas interactions, autosave-state indication, and preview. `dashboard/interactive.css` styles the workspace.
 
 Each scene has an ID, title, optional media ID, canvas coordinates, and an ordered list of choices. Each choice has a label, destination scene ID, and optional `timeSec`. The SVG edge layer draws connectors between output and input ports. The canvas supports pan/zoom/fit/focus and grows as content approaches its boundaries.

@@ -270,10 +270,10 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="dashboard/dashboard.css?v=20261007-5">
   <link rel="stylesheet" href="dashboard/consistency.css?v=20261008-1">
-  <?php if ($page === 'interactive'): ?><link rel="stylesheet" href="dashboard/interactive.css?v=10"><?php endif ?>
+  <?php if ($page === 'interactive'): ?><link rel="stylesheet" href="dashboard/interactive.css?v=11"><?php endif ?>
 </head>
 
-<body class="<?= $page === 'interactive' ? 'interactive-page' : '' ?>">
+<body class="<?= $page === 'interactive' ? 'interactive-page' . (($_GET['scenario'] ?? '') === '1' ? ' iv-fullscreen' : '') : '' ?>">
   <div class="shell">
     <button class="mobile-nav-overlay" type="button" aria-label="Close navigation" hidden></button>
     <aside class="sidebar" id="sidebar">
@@ -394,7 +394,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
               addEventListener('DOMContentLoaded', () => document.getElementById('project-modal').showModal())
             </script><?php endif ?>
         <?php elseif ($page === 'interactive'): ?>
-          <?php require __DIR__ . '/dashboard/interactive.php'; ?>
+          <?php require __DIR__ . (($_GET['scenario'] ?? '') === '1' ? '/dashboard/interactive.php' : '/dashboard/interactive-menu.php'); ?>
         <?php elseif ($page === 'media'): ?>
           <section class="content panel media-browser-panel">
             <div class="section-head">
@@ -521,7 +521,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
     </main>
   </div>
   <script src="dashboard/dashboard.js?v=20261022-1"></script>
-<?php if ($page === 'interactive'): ?><script src="dashboard/interactive.js?v=10"></script><?php endif ?>
+<?php if ($page === 'interactive' && ($_GET['scenario'] ?? '') === '1'): ?><script src="dashboard/interactive.js?v=11"></script><?php endif ?>
 </body>
 
 </html>

@@ -31,8 +31,7 @@
               "title": "Graph view"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -196,8 +195,12 @@
       "bases:Create new base": false
     }
   },
-  "active": "0f02605958473a90",
+  "active": "c7025d526bcd9ff3",
   "lastOpenFiles": [
+    "tests/setup-admin-test.php",
+    "docs/design/DESIGN.md",
+    "setup-admin.php",
+    "dashboard/interactive-menu.php",
     "AI_CONTEXT.md",
     "dashboard/styles/README.md",
     "docs/README.md",
@@ -205,7 +208,6 @@
     "New folder",
     "dashboard/orienscape-logo.png",
     "docs/decisions/DECISIONS.md",
-    "docs/design/DESIGN.md",
     "docs/technical/TESTING-AND-SETUP.md",
     "docs/technical",
     "docs/architecture/ARCHITECTURE.md",
