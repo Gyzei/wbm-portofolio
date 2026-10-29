@@ -1,6 +1,6 @@
 ---
 name: second-memory
-description: Use and maintain the project's Obsidian Second Memory. Read AI_CONTEXT.md before project work, track the current command, document features with related code as Obsidian attachments, keep README.md only at root, and synchronize memory.
+description: Use and maintain the project's Obsidian Second Memory. Read AI_CONTEXT.md before project work, track the current command, document features by linking existing project code files directly in Obsidian notes, keep README.md only at root, and synchronize memory.
 compatibility: opencode
 metadata:
   purpose: project-memory
@@ -95,8 +95,6 @@ project-root/
 ├── README.md               # sole README.md; documentation index
 ├── AI_CONTEXT.md
 ├── ACTIVE_TASKS.md          # temporary checklist for the current command
-├── attachments/             # Obsidian attachments (or existing configured attachment folder)
-│   └── features/            # feature-related code attachments, when needed
 ├── docs/
 │   ├── PRD/
 │   │   └── PRD.md
@@ -221,23 +219,31 @@ Whenever a feature is added, changed, or fixed in a way that affects its behavio
 1. Create or update its dedicated document under `docs/features/`. Reuse an existing feature document when one already covers the same feature.
 2. Document actual behavior separately from intended behavior; do not claim tests passed unless they were run.
 3. Add useful Obsidian links to related requirements, design, architecture, decisions, and technical setup notes.
-4. For code files related to the feature that need to be retained in the vault, use **Obsidian attachments** (see the rules below), then link those attachments from the feature note. Do not put code dumps in `AI_CONTEXT.md`.
+4. In the feature note itself, **mention or attach existing project code files by linking to their current paths** (see the rules below). Do not copy files into an attachment folder or put code dumps in `AI_CONTEXT.md`.
 5. Update root `README.md` so the feature document is discoverable.
 6. Update `AI_CONTEXT.md` only with compact current state, critical constraints, references, and the next actionable handoff—not the full feature description.
 7. If several features are changed, document each feature separately unless they form one cohesive feature with a shared lifecycle and clear reason to keep them together.
 8. Do not create empty feature documents for planned or speculative features. For plans not yet implemented, document them in the relevant PRD/design note instead.
 
 
-### Obsidian attachments for feature-related code
+### Direct Obsidian references to existing feature code
 
-Use the vault's **Obsidian attachment location** for code files associated with a feature when their contents are needed as persistent feature references. Follow the vault's configured attachment folder if one already exists. Otherwise use `attachments/features/<feature-slug>/` and preserve meaningful original filenames and extensions (e.g., `attachments/features/release-upload/uploader.ts`).
+For each feature, mention or attach **the code files that already exist in the project** directly inside `docs/features/<feature-slug>.md`. The project root is also the Obsidian vault root for these links. Treat an "attachment" here as a reference/link to the **original file in its current project directory**, not a copied file.
 
-- Keep application source files in their actual source-code locations; an attachment is a documented reference or snapshot, **not** a replacement for executable project source. Do not move build inputs into the vault just to document them.
-- Store only code files directly relevant to the feature and needed for future understanding; avoid mirroring the entire repository or creating redundant snapshots without a purpose.
-- In the corresponding `docs/features/<feature-slug>.md`, link each attachment using an Obsidian-compatible file link, and describe its original repository path, purpose, and snapshot revision/date when known. Make clear whether the attachment is a snapshot or canonical source.
-- Preserve the file's language extension. Do not rename code attachments to `README.md`, and do not create README files in attachment folders.
-- Before attaching code, remove secrets, credentials, private keys, sensitive environment values, and unrelated user data. Never assume that copying source into the vault is safe without checking.
-- After moving or renaming attachments, repair links and verify their targets. If attachments cannot be saved or accessed, document the limitation rather than claiming they exist.
+- **Do not create** an `attachments/`, `attachments/features/`, or other new folder for feature code. Do not duplicate, snapshot, relocate, rename, or edit source files just to attach them to documentation.
+- Link only existing, relevant source/config/test files. Use an Obsidian wikilink with its project-relative path when supported, e.g. `[[src/features/release-upload/uploader.ts]]`. If Obsidian cannot resolve the source file as a wikilink, use a relative Markdown link from the feature note, e.g. `[uploader.ts](../../src/features/release-upload/uploader.ts)`.
+- In the feature document, give each linked file's path and role. For example:
+
+  ```markdown
+  ## Related project files
+  - `src/features/release-upload/uploader.ts` — upload handler: [[src/features/release-upload/uploader.ts]]
+  - `src/features/release-upload/upload.test.ts` — feature tests: [[src/features/release-upload/upload.test.ts]]
+  ```
+
+- Link to the canonical project file, not a snapshot. Do not paste large source blocks into `docs/features/` or `AI_CONTEXT.md`; include only brief non-sensitive excerpts when genuinely necessary.
+- Verify that each linked path exists and resolves in the current Obsidian vault. For paths outside the vault, do not claim a valid Obsidian attachment; note the limitation and use an appropriate repository link if available.
+- When source files are moved or renamed during actual feature work, update the links in the feature documentation. Never change executable paths solely to repair a documentation link.
+- Avoid recording secrets, credentials, private keys, sensitive environment values, or unrelated personal data in documentation.
 
 ### README naming rule
 
@@ -255,7 +261,7 @@ Use standard Obsidian links, for example `[[docs/PRD/PRD]]` or `[[docs/technical
 - Link related requirements, design, decisions, and technical notes when the relationship is useful.
 - Prefer stable, descriptive filenames.
 - Check that linked files exist; identify planned links clearly.
-- Update affected links and root `README.md` when moving or renaming documents or Obsidian code attachments.
+- Update affected links and root `README.md` when moving or renaming documents or linked project source files.
 - Avoid link spam and circular references with no navigational value.
 - Prefer relative paths and the existing vault's naming conventions.
 
@@ -306,7 +312,7 @@ Every invocation must finish by checking memory synchronization. Before consider
 - [ ] Every implemented or materially changed feature has an appropriate dedicated document under `docs/features/`, and root `README.md` links to it.
 - [ ] TODO contains only actionable unfinished tasks.
 - [ ] Detailed facts are stored in the correct document.
-- [ ] Obsidian links, feature code attachments (when required), and the root documentation index are accurate.
+- [ ] Obsidian references to existing project code files in `docs/features/` resolve without creating attachment folders or copies; the root documentation index is accurate.
 - [ ] The only `README.md` (case-insensitive) is at project root; any non-root indexes have different names.
 - [ ] `skills/` remains unchanged.
 - [ ] No secrets were copied into documentation.
