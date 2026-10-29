@@ -5,6 +5,7 @@
 - [[docs/architecture/ARCHITECTURE]] — application modules, technology stack, and data boundaries.
 - [[docs/decisions/DECISIONS]] — scenario storage, timers, and media safety decisions.
 - [[docs/technical/TESTING-AND-SETUP]] — local assumptions and safe test commands.
+- [[docs/technical/REPOSITORY-AUDIT]] — current security, data integrity, and test findings.
 - [[docs/features/story-flow-editor]] — story flow controls, canvas behavior, and verification.
 - [[docs/features/public-portfolio]] — visitor portfolio, highlights, and project browsing.
 - [[docs/features/content-management]] — projects, highlights, and profile administration.

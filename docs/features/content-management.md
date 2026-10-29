@@ -5,3 +5,7 @@ The authenticated dashboard in `admin.php` manages projects, featured highlights
 Projects and highlights are stored in MySQL; image selection uses [[docs/features/media-library]]. The public result is described in [[docs/features/public-portfolio]].
 
 **Verification:** routes and handlers were inspected during mapping; create/edit/delete workflows and database writes were not tested in this task.
+
+## Related project files
+- [admin.php](../../admin.php) — project, highlight, and profile handlers.
+- [dashboard/dashboard.js](../../dashboard/dashboard.js) — dashboard interactions.

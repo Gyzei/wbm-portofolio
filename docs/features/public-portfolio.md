@@ -5,3 +5,7 @@
 Project order is stable within a visitor session and prioritizes projects with links. Highlights without entries show fallback content. Public data is maintained in [[docs/features/content-management]] and [[docs/features/media-library]].
 
 **Verification:** implementation was inspected during feature mapping; public-page browser behavior was not retested in this task.
+
+## Related project files
+- [index.php](../../index.php) — public portfolio rendering.
+- [portfolio-refresh.js](../../portfolio-refresh.js) — public page interactions.

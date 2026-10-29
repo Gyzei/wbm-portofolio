@@ -7,10 +7,13 @@ PHP/MySQL portfolio and admin CMS with an interactive branching-video editor.
 Interactive video now supports separate scenarios; legacy migration and persistence passed 27 checks on isolated databases. Browser verification remains outstanding. Uploads use `uploads/`; legacy `assets/` remains supported. Admin setup is CLI-only.
 
 ## TODO
+- [ ] Fix admin CSRF gaps, unsafe SVG uploads and project URL schemes; see [[docs/technical/REPOSITORY-AUDIT]].
+- [ ] Fix orphaned highlights when deleting a project and add login throttling.
+- [ ] Handle failed media database inserts without leaving uploaded files behind.
 - [ ] Verify scenario creation, switching and editor regression in an authenticated browser at desktop and mobile widths.
 - [ ] Verify successful first-admin setup on a disposable database.
 - [ ] Confirm existing administrator password is not the former default before deployment.
-- [ ] Verify and fix undo grouping when edits switch between different fields within 700 ms.
+- [ ] Fix undo grouping when edits switch between different fields within 700 ms.
 - [ ] Verify upload and media deletion end-to-end for `uploads/` using a disposable database.
 
 ## Critical Constraints

@@ -5,3 +5,8 @@ The admin's Video Interaktif menu lists scenarios in a project-style table. The 
 Preview takes a draft snapshot, plays available scene videos, and exposes timed choices during playback or remaining choices at the end. Missing/unplayable media has a choice fallback. JSON download is a backup; there is no import feature. Each scenario has its own revision; saves and media deletion coordinate through the original row lock, and media used by any scenario is protected. The API checks session, CSRF token, scenario ID, request size, graph validity, and media IDs. On first creation, legacy tables are migrated to an auto-increment integer ID without replacing existing graphs. Source videos come from [[docs/features/media-library]], including new uploads and legacy assets.
 
 **Limitations:** scenario deletion and a public interactive-video player are not implemented. Timer duration bounds rely on browser video metadata; server validation checks the numeric range, not video duration. Undo history is in-memory only. Persistence tests passed 27 checks on fresh and legacy-schema disposable databases; authenticated browser testing remains outstanding. See [[docs/decisions/DECISIONS]] and [[docs/technical/TESTING-AND-SETUP]].
+
+## Related project files
+- [dashboard/interactive-menu.php](../../dashboard/interactive-menu.php) — scenario menu.
+- [dashboard/interactive-api.php](../../dashboard/interactive-api.php) and [dashboard/interactive-store.php](../../dashboard/interactive-store.php) — save API, persistence, and graph validation.
+- [tests/interactive-persistence-test.php](../../tests/interactive-persistence-test.php) and [tests/interactive-store-test.php](../../tests/interactive-store-test.php) — persistence and validation checks.

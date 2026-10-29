@@ -16,3 +16,8 @@ The authenticated browser regression passed 112 checks, including desktop-width 
 Arrange regression checks were added for row spacing, framing, the 100-scene position limit, connections, and undo. They remain unverified: the current browser session was not logged in. JavaScript syntax checks and the 22-check graph validation test passed.
 
 For the UI update, PHP and test JavaScript syntax checks and the 22-check graph validation test passed. The editor UI still needs authenticated browser verification at desktop and mobile widths. The design-taste source lint reports existing editor borders, canvas grid, and state shadows; its landing-page rules are not a complete fit for this interactive workspace.
+
+## Related project files
+- [dashboard/interactive.js](../../dashboard/interactive.js) — editor interactions and history.
+- [dashboard/interactive.php](../../dashboard/interactive.php) and [dashboard/interactive.css](../../dashboard/interactive.css) — editor markup and styling.
+- [tests/interactive-editor-test.js](../../tests/interactive-editor-test.js) — browser regression checks.

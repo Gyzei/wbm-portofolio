@@ -4,7 +4,7 @@
 The checked-out app uses PHP with `mysqli` and MySQL. This workspace has Laragon-style Windows paths. `koneksi.php` contains the connection configuration and uses database name `portofolio`; inspect/configure that file for the local environment. The app creates/adjusts several tables at runtime. Do not copy local credentials into documentation.
 
 No Composer/package manifest or build script was found. Admin pages require an authenticated session.
-The project directory is not a Git repository, so version-control status/history could not be inspected.
+The project is a Git repository; the audit inspected revision `783202e`.
 
 ## Tests
 - `php tests/interactive-store-test.php` — isolated graph validation; no database needed. Executed during memory audit: **22 checks passed**.
@@ -19,7 +19,7 @@ The project directory is not a Git repository, so version-control status/history
 - Graph validation: **22 checks passed**. Setup validation: `php tests/setup-admin-test.php`, **4 checks passed** without database access.
 - PHP lint passed for auth, setup, admin, editor shell/menu, and setup tests. JavaScript test syntax passed.
 - PHP is available at `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe` even when absent from PATH.
-- Persistence integration, successful first-account provisioning on a disposable database, and production deployment remain unverified.
+- Successful first-account provisioning on a disposable database and production deployment remain unverified. Persistence was tested only on disposable databases, as noted above.
 
 ## First administrator setup
 Web requests no longer create accounts. `setup-admin.php` is CLI-only (HTTP returns 404), requires `PORTFOLIO_ADMIN_USERNAME` and `PORTFOLIO_ADMIN_PASSWORD` environment variables, and refuses to create an account if any user already exists. Username accepts 1–50 ASCII letters, numbers, dot, underscore, or dash; password requires 12–72 bytes. It hashes the password and locks the users table during the empty-table check and insert; the database account needs `LOCK TABLES` permission.
