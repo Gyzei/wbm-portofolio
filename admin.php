@@ -553,7 +553,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
     </main>
   </div>
   <script src="dashboard/dashboard.js?v=20261022-1"></script>
-<?php if ($page === 'interactive' && $scenarioId): ?><script src="dashboard/interactive.js?v=15"></script><?php endif ?>
+<?php if ($page === 'interactive' && $scenarioId): ?><script src="dashboard/interactive.js?v=16"></script><?php endif ?>
 </body>
 
 </html>

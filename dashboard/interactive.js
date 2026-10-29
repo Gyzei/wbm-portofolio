@@ -15,7 +15,7 @@
   const snapshot = () => JSON.stringify(graph);
   let baseline = snapshot(), historySnapshot = baseline, selected = null, connecting = null, zoom = 1, saving = false, drag = null;
   const undoStack = [], redoStack = [], HISTORY_LIMIT = 100;
-  let historyInputAt = 0;
+  let historyInputAt = 0, historyInputField = null;
   const MIN_ZOOM = .005, MAX_ZOOM = 2;
   const WORLD_PADDING = 32, MAX_POSITION = 20000, CANVAS_STEP = 512;
   const thumbnailObserver = new IntersectionObserver(entries => entries.forEach(({target, isIntersecting}) => {
@@ -49,8 +49,8 @@
     $('undo').disabled = undoStack.length === 0;
     $('redo').disabled = redoStack.length === 0;
   }
-  function changed(typing = false) {
-    const current = snapshot(), coalesce = typing && Date.now() - historyInputAt < 700;
+  function changed(field = null) {
+    const current = snapshot(), coalesce = field !== null && field === historyInputField && Date.now() - historyInputAt < 700;
     if (current !== historySnapshot) {
       if (!coalesce) {
         undoStack.push(historySnapshot);
@@ -59,7 +59,8 @@
       }
       historySnapshot = current;
     }
-    historyInputAt = typing ? Date.now() : 0;
+    historyInputAt = field !== null ? Date.now() : 0;
+    historyInputField = field;
     dirty(); updateHistoryButtons();
   }
   function restoreHistory(from, to, message) {
@@ -69,7 +70,7 @@
     clearConnection();
     Object.assign(graph, JSON.parse(from.pop()));
     if (!scene(selected)) selected = scene(graph.startId)?.id ?? graph.scenes[0]?.id ?? null;
-    historySnapshot = snapshot(); historyInputAt = 0;
+    historySnapshot = snapshot(); historyInputAt = 0; historyInputField = null;
     render(); dirty(); updateHistoryButtons(); announce(`Perubahan ${message}.`);
   }
   function undo() { restoreHistory(undoStack, redoStack, 'dibatalkan'); }
@@ -701,7 +702,7 @@
     const id = event.dataTransfer.getData('application/x-iv-scene'), row = event.target.closest('[data-order]');
     if (row) reorder(id, graph.scenes.findIndex(item => item.id === row.dataset.order));
   });
-  $('title').addEventListener('input', event => { graph.title = event.target.value; changed(true); });
+  $('title').addEventListener('input', event => { graph.title = event.target.value; changed('title'); });
   $('scene-title').addEventListener('input', event => {
     if (!scene(selected)) return;
     scene(selected).title = event.target.value;
@@ -711,7 +712,7 @@
     node.setAttribute('aria-label', `Scene ${number(selected)}: ${event.target.value}${graph.startId === selected ? ', scene awal' : ''}`);
     node.querySelector('[data-input-port]').setAttribute('aria-label', `Input scene ${event.target.value}`);
     node.querySelector('[data-connect]').setAttribute('aria-label', `Hubungkan ${event.target.value} ke scene lain`);
-    changed(true); renderSceneList(); updateEdgeTitles(`[data-edge-source="${selected}"], [data-edge-target="${selected}"]`);
+    changed(`scene:${selected}:title`); renderSceneList(); updateEdgeTitles(`[data-edge-source="${selected}"], [data-edge-target="${selected}"]`);
   });
   $('set-start').addEventListener('click', () => { graph.startId = selected; changed(); render(); announce('Scene awal cerita diperbarui. Reorder tidak mengubah scene awal.'); });
   $('add-choice').addEventListener('click', () => {
@@ -730,13 +731,13 @@
       const node = document.querySelector(`[data-node="${selected}"]`);
       node.querySelectorAll('.iv-node-choice > span:first-child')[index].textContent = labelInput.value;
       node.querySelector(`[data-choice-port="${index}"]`).setAttribute('aria-label', `Sambungkan ulang pilihan ${labelInput.value} pada scene ${number(selected)}`);
-      changed(true); updateEdgeTitles(`[data-edge-source="${selected}"][data-edge-choice="${index}"]`);
+      changed(`scene:${selected}:choice:${index}:label`); updateEdgeTitles(`[data-edge-source="${selected}"][data-edge-choice="${index}"]`);
     } else if (timeInput) {
       const index = Number(timeInput.dataset.choiceTime);
       const val = timeInput.value.trim(), num = val === '' ? null : parseTimecode(val);
       const valid = val === '' || (num !== null && sceneDuration !== null && num <= sceneDuration);
       timeInput.setCustomValidity(valid ? '' : sceneDuration === null ? 'Durasi video belum tersedia.' : num === null ? 'Gunakan format menit:detik, misalnya 01:25.' : `Maksimal ${formatTimecode(sceneDuration)} sesuai durasi video.`);
-      if (valid) { scene(selected).choices[index].timeSec = num; changed(true); }
+      if (valid) { scene(selected).choices[index].timeSec = num; changed(`scene:${selected}:choice:${index}:time`); }
     }
   });
   $('choices').addEventListener('change', event => {

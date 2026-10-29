@@ -51,6 +51,28 @@ document.getElementById('run').addEventListener('click', async () => {
       });
     };
 
+    const historyGraph = clone(stored);
+    historyGraph.scenes[0].choices = [{label:'Original choice', target:'b', timeSec:null}];
+    doc = await mount(historyGraph); win = frame.contentWindow;
+    input(get('title'), 'Edited'); input(get('title'), 'Edited title');
+    node('a').click(); input(get('scene-title'), 'Edited scene');
+    input(doc.querySelector('[data-choice-label="0"]'), 'Edited choice');
+    get('undo').click();
+    check(doc.querySelector('[data-choice-label="0"]').value === 'Original choice' && get('scene-title').value === 'Edited scene', 'Undo must separate a choice from the preceding scene title.');
+    get('undo').click();
+    check(get('scene-title').value === 'A' && get('title').value === 'Edited title', 'Undo must separate scene and project titles.');
+    get('undo').click();
+    check(get('title').value === 'Regression test', 'Consecutive input in one field must remain grouped.');
+    get('redo').click(); get('redo').click(); get('redo').click();
+    check(get('title').value === 'Edited title' && get('scene-title').value === 'Edited scene' && doc.querySelector('[data-choice-label="0"]').value === 'Edited choice', 'Redo must restore each separate field edit.');
+    node('b').click(); input(get('scene-title'), 'Edited B');
+    node('a').click(); input(get('scene-title'), 'Edited A');
+    get('undo').click();
+    check(get('scene-title').value === 'Edited scene' && node('b').querySelector('.iv-node-info strong').textContent === 'Edited B', 'The reused scene title input must not merge edits from different scenes.');
+    get('undo').click();
+    check(node('b').querySelector('.iv-node-info strong').textContent === 'B', 'Undo must separately restore the other scene title.');
+    doc = await mount(stored); win = frame.contentWindow;
+
     const canvas = get('canvas');
     check(get('focus').disabled, 'Focus scene must be disabled until a scene is selected.');
     check(get('inspector').hidden && get('inspector-toggle').disabled && get('inspector-toggle').getAttribute('aria-expanded') === 'false', 'Inspector must start closed until a scene is selected.');
