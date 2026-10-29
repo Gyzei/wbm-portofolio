@@ -1,6 +1,6 @@
 ---
 name: second-memory
-description: Use and maintain the project's Obsidian Second Memory. Read AI_CONTEXT.md before project work, track the current command in one active-task file, document each feature, and synchronize memory after meaningful changes.
+description: Use and maintain the project's Obsidian Second Memory. Read AI_CONTEXT.md before project work, track the current command, document features with related code as Obsidian attachments, keep README.md only at root, and synchronize memory.
 compatibility: opencode
 metadata:
   purpose: project-memory
@@ -61,7 +61,7 @@ Immediately on invocation:
 1. Identify the project root. Do not assume the current directory is the root if repository structure indicates otherwise.
 2. Read `AI_CONTEXT.md` at the project root first.
 3. If it does not exist, initialize a minimal memory structure using the rules below.
-4. Read `docs/README.md` if present.
+4. Read the project-root `README.md` if present. No non-root document may be named `README.md`.
 5. Follow only the links relevant to the current request. Do not load every document by default.
 6. Read relevant PRD, design, architecture, decision, technical, and skill references as needed.
 7. Inspect current source/config/tests when the task depends on actual implementation state. Memory can be stale; verify important claims against the project.
@@ -74,7 +74,7 @@ Always read:
 - `AI_CONTEXT.md`
 
 Read only as needed:
-- `docs/README.md`
+- Root `README.md` (the documentation index)
 - The specific PRD/design/architecture/decision/technical notes related to the task
 - Relevant source files, tests, configuration, and relevant skill references
 
@@ -92,10 +92,12 @@ Use existing project conventions when present. Otherwise, use:
 
 ```text
 project-root/
+├── README.md               # sole README.md; documentation index
 ├── AI_CONTEXT.md
 ├── ACTIVE_TASKS.md          # temporary checklist for the current command
+├── attachments/             # Obsidian attachments (or existing configured attachment folder)
+│   └── features/            # feature-related code attachments, when needed
 ├── docs/
-│   ├── README.md
 │   ├── PRD/
 │   │   └── PRD.md
 │   ├── design/
@@ -104,10 +106,11 @@ project-root/
 │   │   └── ARCHITECTURE.md
 │   ├── decisions/
 │   │   └── DECISIONS.md
+│   ├── features/             # one documentation note per implemented feature
 │   ├── technical/
 │   ├── research/
 │   └── archive/
-└── skills/                 # if present in this project's vault
+└── skills/                  # if present in this project's vault
     └── [read-only references]
 ```
 
@@ -138,7 +141,7 @@ Treat this as the single entry point for future sessions. It should contain only
 - Design: [[docs/design/DESIGN]]
 - Architecture: [[docs/architecture/ARCHITECTURE]]
 - Decisions: [[docs/decisions/DECISIONS]]
-- Docs index: [[docs/README]]
+- Docs index: [[README]]
 - Skills: `skills/` (read-only, if present)
 
 ## Session Handoff
@@ -200,7 +203,7 @@ If file writes fail or permissions are unavailable, explain what remains unsaved
 
 Use the existing document if one already serves the purpose. Otherwise:
 
-- `docs/README.md`: short index of existing documents and their purposes.
+- Root `README.md`: the **only** file named `README.md` in the project, serving as the short index of existing documents and their purposes. Do not create a `README.md` in `docs/`, feature folders, or any other subdirectory. If a separate non-root index is required, use a descriptive name such as `INDEX.md` instead.
 - `docs/PRD/PRD.md`: objectives, scope, functional/non-functional requirements, user workflows, acceptance criteria, exclusions, and assumptions.
 - `docs/design/DESIGN.md`: component design, behavior, data flows, algorithms, constraints, and trade-offs.
 - `docs/architecture/ARCHITECTURE.md`: verified system structure, module responsibilities, dependencies, integration boundaries, and execution/data flows.
@@ -218,10 +221,27 @@ Whenever a feature is added, changed, or fixed in a way that affects its behavio
 1. Create or update its dedicated document under `docs/features/`. Reuse an existing feature document when one already covers the same feature.
 2. Document actual behavior separately from intended behavior; do not claim tests passed unless they were run.
 3. Add useful Obsidian links to related requirements, design, architecture, decisions, and technical setup notes.
-4. Update `docs/README.md` so the feature document is discoverable.
-5. Update `AI_CONTEXT.md` only with compact current state, critical constraints, references, and the next actionable handoff—not the full feature description.
-6. If several features are changed, document each feature separately unless they form one cohesive feature with a shared lifecycle and clear reason to keep them together.
-7. Do not create empty feature documents for planned or speculative features. For plans not yet implemented, document them in the relevant PRD/design note instead.
+4. For code files related to the feature that need to be retained in the vault, use **Obsidian attachments** (see the rules below), then link those attachments from the feature note. Do not put code dumps in `AI_CONTEXT.md`.
+5. Update root `README.md` so the feature document is discoverable.
+6. Update `AI_CONTEXT.md` only with compact current state, critical constraints, references, and the next actionable handoff—not the full feature description.
+7. If several features are changed, document each feature separately unless they form one cohesive feature with a shared lifecycle and clear reason to keep them together.
+8. Do not create empty feature documents for planned or speculative features. For plans not yet implemented, document them in the relevant PRD/design note instead.
+
+
+### Obsidian attachments for feature-related code
+
+Use the vault's **Obsidian attachment location** for code files associated with a feature when their contents are needed as persistent feature references. Follow the vault's configured attachment folder if one already exists. Otherwise use `attachments/features/<feature-slug>/` and preserve meaningful original filenames and extensions (e.g., `attachments/features/release-upload/uploader.ts`).
+
+- Keep application source files in their actual source-code locations; an attachment is a documented reference or snapshot, **not** a replacement for executable project source. Do not move build inputs into the vault just to document them.
+- Store only code files directly relevant to the feature and needed for future understanding; avoid mirroring the entire repository or creating redundant snapshots without a purpose.
+- In the corresponding `docs/features/<feature-slug>.md`, link each attachment using an Obsidian-compatible file link, and describe its original repository path, purpose, and snapshot revision/date when known. Make clear whether the attachment is a snapshot or canonical source.
+- Preserve the file's language extension. Do not rename code attachments to `README.md`, and do not create README files in attachment folders.
+- Before attaching code, remove secrets, credentials, private keys, sensitive environment values, and unrelated user data. Never assume that copying source into the vault is safe without checking.
+- After moving or renaming attachments, repair links and verify their targets. If attachments cannot be saved or accessed, document the limitation rather than claiming they exist.
+
+### README naming rule
+
+`README.md` is allowed **only at the project root**. The root `README.md` doubles as the documentation index. For any non-root documentation landing page, use a descriptive filename such as `INDEX.md`, `OVERVIEW.md`, or a topic-specific name—never any case variation of `README.md`. When working in a repository that already has non-root README files, inspect and preserve their content, migrate or rename them safely when appropriate, and repair references. Never silently delete existing documentation.
 
 
 Separate intended behavior from implemented behavior. Do not invent missing requirements, rationale, test results, or completion status. Label consequential unknowns as `Unknown`, `Unverified`, or `Needs confirmation`.
@@ -235,7 +255,7 @@ Use standard Obsidian links, for example `[[docs/PRD/PRD]]` or `[[docs/technical
 - Link related requirements, design, decisions, and technical notes when the relationship is useful.
 - Prefer stable, descriptive filenames.
 - Check that linked files exist; identify planned links clearly.
-- Update affected links and `docs/README.md` when moving or renaming documents.
+- Update affected links and root `README.md` when moving or renaming documents or Obsidian code attachments.
 - Avoid link spam and circular references with no navigational value.
 - Prefer relative paths and the existing vault's naming conventions.
 
@@ -252,12 +272,12 @@ If the `skills/` directory is missing or inaccessible, do not modify unrelated f
 If `AI_CONTEXT.md` or supporting memory files are missing or incomplete:
 
 1. Inspect the repository and existing documents before writing anything.
-2. Review README files, manifests, configs, source entry points, tests, and relevant Git status/history when available.
+2. Review root `README.md`, existing documentation (including any legacy non-root README files that need migration), manifests, configs, source entry points, tests, and relevant Git status/history when available.
 3. Establish project purpose, technology stack, architecture, implemented behavior, requirements, test evidence, and unfinished work from available evidence.
 4. Separate confirmed facts from inferences and unknowns.
 5. Create/update only justified memory files, preserving useful existing content.
 6. Populate the TODO list only with confirmed actionable unfinished tasks, or concrete validation tasks for meaningful uncertainties.
-7. Add meaningful Obsidian links and update `docs/README.md`.
+7. Add meaningful Obsidian links and update root `README.md`; do not create any non-root README files.
 8. Keep `AI_CONTEXT.md` minimal.
 9. Do not change application source code as part of memory initialization unless explicitly requested.
 10. Do not commit, push, or perform destructive operations unless explicitly requested.
@@ -283,10 +303,11 @@ Every invocation must finish by checking memory synchronization. Before consider
 
 - [ ] `AI_CONTEXT.md` reflects the actual current state and is as compact as possible (aim for 50–120 words).
 - [ ] `ACTIVE_TASKS.md` was used to track the current command; clear its command-specific checklist only after all tasks are completed and verified, or retain it if unfinished/blocked.
-- [ ] Every implemented or materially changed feature has an appropriate dedicated document under `docs/features/`, and `docs/README.md` links to it.
+- [ ] Every implemented or materially changed feature has an appropriate dedicated document under `docs/features/`, and root `README.md` links to it.
 - [ ] TODO contains only actionable unfinished tasks.
 - [ ] Detailed facts are stored in the correct document.
-- [ ] Obsidian links and the documentation index are accurate.
+- [ ] Obsidian links, feature code attachments (when required), and the root documentation index are accurate.
+- [ ] The only `README.md` (case-insensitive) is at project root; any non-root indexes have different names.
 - [ ] `skills/` remains unchanged.
 - [ ] No secrets were copied into documentation.
 - [ ] The main file remains compact.
