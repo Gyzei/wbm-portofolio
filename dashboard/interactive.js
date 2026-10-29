@@ -41,6 +41,7 @@
     $('save-state').classList.toggle('is-dirty', snapshot() !== baseline);
   }
   function setInspectorVisible(visible) {
+    visible = Boolean(visible && scene(selected));
     $('inspector').hidden = !visible;
     $('inspector-toggle').setAttribute('aria-expanded', String(visible));
   }
@@ -251,12 +252,14 @@
     item.choices.forEach((choice, index) => {
       if (choice.timeSec === undefined) choice.timeSec = null;
     });
-    $('choices').innerHTML = item.choices.map((choice, index) => `<div class="iv-choice-editor"><div><label class="iv-field">Pilihan ${index + 1}<input data-choice-label="${index}" maxlength="100" required value="${escape(choice.label)}"></label><button type="button" data-remove-choice="${index}" aria-label="Hapus pilihan ${index + 1}">×</button></div><div class="iv-choice-row"><div class="iv-field">Menuju scene${customSelect('target', choice.target, 'Tujuan scene', graph.scenes.filter(target => target.id !== item.id).map(target => ({value:target.id, label:`${number(target.id)} · ${target.title}`})), index)}</div><label class="iv-field iv-field-time">Muncul pada (mm:ss)<input type="text" inputmode="numeric" pattern="\\d+:([0-5]\\d)" maxlength="7" data-choice-time="${index}" value="${escape(formatTimecode(choice.timeSec))}" placeholder="mm:ss" title="Format menit:detik; maksimal ${formatTimecode(sceneDuration)}" ${sceneDuration === null ? 'disabled' : ''}></label></div></div>`).join('');
+    $('choices').innerHTML = item.choices.map((choice, index) => `<div class="iv-choice-editor"><div><label class="iv-field">Pilihan ${index + 1}<input data-choice-label="${index}" maxlength="100" required value="${escape(choice.label)}"></label><button type="button" data-remove-choice="${index}" aria-label="Hapus pilihan ${index + 1}">×</button></div><div class="iv-choice-row"><div class="iv-field">Menuju scene${customSelect('target', choice.target, 'Tujuan scene', graph.scenes.filter(target => target.id !== item.id).map(target => ({value:target.id, label:`${number(target.id)} · ${target.title}`})), index)}</div><label class="iv-field iv-field-time">Tombol Muncul<input type="text" inputmode="numeric" pattern="\\d+:([0-5]\\d)" maxlength="7" data-choice-time="${index}" value="${escape(formatTimecode(choice.timeSec))}" placeholder="mm:ss" title="Format menit:detik; maksimal ${formatTimecode(sceneDuration)}" ${sceneDuration === null ? 'disabled' : ''}></label></div></div>`).join('');
     $('add-choice').disabled = graph.scenes.length < 2 || item.choices.length >= 8;
     $('add-choice').title = graph.scenes.length < 2 ? 'Tambahkan scene lain terlebih dahulu' : '';
   }
   function renderInspector() {
     const item = scene(selected);
+    $('inspector-toggle').disabled = !item;
+    if (!item) setInspectorVisible(false);
     $('inspector-empty').hidden = Boolean(item);
     $('scene-fields').hidden = !item;
     $('selected-number').textContent = item ? `SCENE ${number(item.id)}` : '—';
@@ -632,6 +635,14 @@
   });
   $('undo').addEventListener('click', undo);
   $('redo').addEventListener('click', redo);
+  $('library-toggle').addEventListener('click', event => {
+    const library = $('library'), closed = !library.hidden;
+    library.hidden = closed;
+    library.parentElement.classList.toggle('iv-library-closed', closed);
+    event.currentTarget.setAttribute('aria-expanded', String(!closed));
+    event.currentTarget.setAttribute('aria-label', `${closed ? 'Buka' : 'Tutup'} panel media dan scene`);
+    event.currentTarget.title = event.currentTarget.getAttribute('aria-label');
+  });
   $('inspector-toggle').addEventListener('click', () => setInspectorVisible($('inspector').hidden));
   $('inspector-close').addEventListener('click', () => { setInspectorVisible(false); $('inspector-toggle').focus(); });
   window.addEventListener('blur', () => {
@@ -755,8 +766,14 @@
     $('delete-dialog').close(); changed(); render(); announce('Scene dan cabang terkait dihapus dari draft. Video asli tetap aman.');
   });
   $('arrange').addEventListener('click', () => {
-    graph.scenes.forEach((item, index) => { item.x = 70 + (index % 4) * 340; item.y = 70 + Math.floor(index / 4) * 610; });
-    changed(); renderNodes(); renderInspector(); $('canvas').scrollTo(0,0); announce('Scene dirapikan mengikuti urutan daftar.');
+    let y = 70;
+    for (let index = 0; index < graph.scenes.length; index += 4) {
+      const row = graph.scenes.slice(index, index + 4);
+      const height = Math.max(...row.map(item => document.querySelector(`[data-node="${item.id}"]`).offsetHeight));
+      row.forEach((item, column) => { item.x = 70 + column * 340; item.y = y; });
+      y += height + 70;
+    }
+    changed(); renderNodes(); renderInspector(); frameScenes(graph.scenes); announce('Scene dirapikan mengikuti urutan daftar.');
   });
   function setZoom(value, anchorX = $('canvas').clientWidth / 2, anchorY = $('canvas').clientHeight / 2) {
     const previous = zoom;

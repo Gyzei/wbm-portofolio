@@ -5,5 +5,11 @@
 - [[docs/architecture/ARCHITECTURE]] — application modules, technology stack, and data boundaries.
 - [[docs/decisions/DECISIONS]] — shared draft, timers, and media safety decisions.
 - [[docs/technical/TESTING-AND-SETUP]] — local assumptions and safe test commands.
+- [[docs/features/story-flow-editor]] — story flow controls, canvas behavior, and verification.
+- [[docs/features/public-portfolio]] — visitor portfolio, highlights, and project browsing.
+- [[docs/features/content-management]] — projects, highlights, and profile administration.
+- [[docs/features/media-library]] — uploads, media management, and deletion safeguards.
+- [[docs/features/admin-authentication]] — login, account settings, and first-account setup.
+- [[docs/features/interactive-video-draft]] — interactive draft, preview, and persistence.
 
 Related: [[docs/PRD/PRD]] describes product behavior; [[docs/design/DESIGN]] explains the interactive editor; [[docs/architecture/ARCHITECTURE]] maps it to the wider PHP/MySQL application.

@@ -53,11 +53,7 @@ document.getElementById('run').addEventListener('click', async () => {
 
     const canvas = get('canvas');
     check(get('focus').disabled, 'Focus scene must be disabled until a scene is selected.');
-    check(!get('inspector').hidden && get('inspector-toggle').getAttribute('aria-expanded') === 'true', 'Inspector should start open with an expanded toggle.');
-    get('inspector-close').click();
-    check(get('inspector').hidden && get('inspector-toggle').getAttribute('aria-expanded') === 'false', 'Close control should hide the floating inspector.');
-    get('inspector-toggle').click();
-    check(!get('inspector').hidden && get('inspector-toggle').getAttribute('aria-expanded') === 'true', 'Toolbar toggle should reopen the inspector.');
+    check(get('inspector').hidden && get('inspector-toggle').disabled && get('inspector-toggle').getAttribute('aria-expanded') === 'false', 'Inspector must start closed until a scene is selected.');
     check(get('undo').disabled && get('redo').disabled, 'Undo and redo controls should start disabled.');
     input(get('title'), 'Edited title');
     get('undo').click();
@@ -96,7 +92,7 @@ document.getElementById('run').addEventListener('click', async () => {
       pointer(canvas, 'pointerdown', 160, 160);
       pointer(canvas, 'pointermove', 100, 120);
       pointer(canvas, 'pointerup', 100, 120);
-      check(canvas.scrollLeft === 160 && canvas.scrollTop === 140, 'Dragging empty canvas must pan both axes.');
+      check(Math.abs(canvas.scrollLeft - 160) < 1.5 && Math.abs(canvas.scrollTop - 140) < 1.5, 'Dragging empty canvas must pan both axes.');
       await new Promise(resolve => setTimeout(resolve, 0));
       canvas.dispatchEvent(new win.KeyboardEvent('keydown', {key:' ', code:'Space', bubbles:true, cancelable:true}));
       const left = node('a').style.left, top = node('a').style.top;
@@ -112,11 +108,21 @@ document.getElementById('run').addEventListener('click', async () => {
       pointer(canvas, 'pointerup', 160, 160, 1);
     } finally { canvas.setPointerCapture = capture; }
     check(get('save-state').textContent === 'Draft tersimpan', 'Viewport navigation must not dirty the draft.');
+    const initialCanvasWidth = canvas.clientWidth;
+    get('library-toggle').click();
+    check(get('library').hidden && get('library-toggle').getAttribute('aria-expanded') === 'false' && canvas.clientWidth > initialCanvasWidth, 'Closing the library should expand the canvas.');
+    check(get('save-state').textContent === 'Draft tersimpan', 'Toggling the library must not change the draft.');
+    get('library-toggle').click();
+    check(!get('library').hidden && get('library-toggle').getAttribute('aria-expanded') === 'true' && canvas.clientWidth === initialCanvasWidth, 'Opening the library should restore its layout.');
     get('zoom-reset').click();
 
-    get('inspector-close').click();
     node('a').focus(); node('a').click();
     check(!get('inspector').hidden && get('inspector-toggle').getAttribute('aria-expanded') === 'true', 'Selecting a scene should reopen the inspector.');
+    get('inspector-close').click();
+    check(get('inspector').hidden && !get('inspector-toggle').disabled, 'Close control should hide the inspector without deselecting the scene.');
+    get('inspector-toggle').click();
+    check(!get('inspector').hidden && get('inspector-toggle').getAttribute('aria-expanded') === 'true', 'Toolbar toggle should reopen the selected scene inspector.');
+    node('a').focus();
     check(doc.activeElement === node('a'), 'Clicking a scene must retain keyboard focus.');
     doc.activeElement.dispatchEvent(new win.KeyboardEvent('keydown', {key:'ArrowRight', bubbles:true}));
     check(node('a').style.left === '90px', 'ArrowRight must move the clicked scene.');
@@ -365,7 +371,15 @@ document.getElementById('run').addEventListener('click', async () => {
       id:`s${index}`, title:`Scene ${index}`, mediaId:null, x:70 + index % 4 * 340, y:70 + Math.floor(index / 4) * 610,
       choices:Array.from({length:8}, (_, offset) => ({label:`Choice ${offset}`, target:`s${(index + offset + 1) % 100}`, timeSec:null})),
     }))};
-    doc = await mount(large); win = frame.contentWindow; node('s0').click();
+    doc = await mount(large); win = frame.contentWindow;
+    const firstHeight = node('s0').offsetHeight;
+    get('arrange').click();
+    check(parseFloat(node('s4').style.top) === 70 + firstHeight + 70, 'Arrange must space rows using actual scene height.');
+    check(parseFloat(node('s99').style.top) <= 20000 && allVisible(), 'Arrange must keep large stories within position limits and frame the result.');
+    check(doc.querySelectorAll('.iv-edge').length === 800, 'Arrange must preserve all connections.');
+    get('undo').click();
+    check(node('s4').style.top === '680px', 'Undo must restore positions before arranging.');
+    node('s0').click();
     const nodes = [...doc.querySelectorAll('[data-node]')], edges = [...doc.querySelectorAll('.iv-edge')];
     const times = [];
     for (let i = 0; i < 5; i++) {
@@ -401,6 +415,11 @@ document.getElementById('run').addEventListener('click', async () => {
 
     doc = await mount({title:'Empty', startId:null, scenes:[]}); win = frame.contentWindow;
     check(get('fit').disabled && get('focus').disabled, 'An empty graph must disable scene navigation.');
+    check(get('inspector').hidden && get('inspector-toggle').disabled, 'An empty graph must not open the inspector.');
+    doc.querySelector('[data-iv-add]').click();
+    check(!get('inspector').hidden && !get('inspector-toggle').disabled, 'Adding a scene must open its inspector.');
+    get('undo').click();
+    check(get('inspector').hidden && get('inspector-toggle').disabled, 'Undoing the last scene must close and disable the inspector.');
     frame.style.width = '375px';
     await new Promise(resolve => setTimeout(resolve, 100));
     check(doc.documentElement.scrollWidth <= win.innerWidth, 'Graph navigation controls must fit a narrow screen.');

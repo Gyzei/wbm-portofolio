@@ -20,11 +20,14 @@ function interactiveDraft(mysqli $conn, bool $lock = false): array
 
 function interactiveMediaPath(string $address): string|false
 {
-    $root = realpath(__DIR__ . '/../assets');
     $path = realpath(__DIR__ . '/../' . $address);
-    if (!$root || !$path || !is_file($path)) return false;
-    if (PHP_OS_FAMILY === 'Windows') { $root = strtolower($root); $path = strtolower($path); }
-    return str_starts_with($path, $root . DIRECTORY_SEPARATOR) ? $path : false;
+    if (!$path || !is_file($path)) return false;
+    if (PHP_OS_FAMILY === 'Windows') $path = strtolower($path);
+    foreach (['assets', 'uploads'] as $directory) {
+        $root = realpath(__DIR__ . '/../' . $directory);
+        if ($root && str_starts_with($path, (PHP_OS_FAMILY === 'Windows' ? strtolower($root) : $root) . DIRECTORY_SEPARATOR)) return $path;
+    }
+    return false;
 }
 
 function interactiveMedia(mysqli $conn): array

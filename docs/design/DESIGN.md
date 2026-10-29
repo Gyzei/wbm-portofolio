@@ -15,7 +15,7 @@ The inspector edits choice label, destination, and timer. Preview uses the selec
 
 Inspector video and destination controls use custom searchable listboxes with keyboard navigation; their selected values continue to update the same scene media IDs and choice target IDs.
 
-The scene inspector floats over the canvas, can be closed and reopened from the toolbar, and reopens when a scene is selected. On narrow screens it becomes a fixed bottom sheet so the controls remain usable.
+The scene inspector floats over the canvas and starts closed; the toolbar button is disabled until a scene is selected. It opens on selection, can be closed and reopened from the toolbar, and closes if no selected scene remains. On narrow screens it becomes a fixed bottom sheet.
 
 Graph edits support toolbar buttons and `Ctrl+Z` undo / `Ctrl+Shift+Z` redo with a bounded 100-step in-memory history. Consecutive text input is coalesced into one undo step; buttons disable when their history stack is empty, and history does not persist across reloads.
 

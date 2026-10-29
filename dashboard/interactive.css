@@ -28,6 +28,7 @@
 .iv-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:8px 12px;border:1px solid var(--iv-line,#dce6eb);border-radius:7px;background:#fff;color:#254858;text-decoration:none;cursor:pointer;font-size:12px;font-weight:600;line-height:1.5;transition:background .15s,border-color .15s}
 .iv-button:hover{background:#edf5f8;border-color:#8db5c7}
 .iv-project-actions #iv-undo:disabled,.iv-project-actions #iv-redo:disabled{opacity:.5;cursor:not-allowed}
+#iv-inspector-toggle:disabled{opacity:.5;cursor:not-allowed}
 .iv-primary{background:var(--iv-blue,#24779d);color:#fff;border-color:var(--iv-blue,#24779d)}
 .iv-primary:hover{background:#195e7e;color:#fff}
 .iv-text-button{border:0;background:transparent;color:var(--iv-blue,#24779d);font-size:12px;cursor:pointer;padding:7px 0;text-decoration:underline;text-underline-offset:3px}
@@ -45,6 +46,8 @@
 .iv-workspace{position:relative;display:grid;grid-template-columns:228px minmax(240px,1fr);min-height:650px;height:calc(100dvh - 250px);max-height:1100px;background:#fff;border-bottom:1px solid var(--iv-line)}
 .iv-library,.iv-inspector{min-width:0;overflow-y:auto;background:#fff}
 .iv-library{border-right:1px solid var(--iv-line)}
+.iv-library[hidden]{display:none}
+.iv-workspace.iv-library-closed{grid-template-columns:minmax(0,1fr)}
 .iv-tabs{display:flex;padding:0 14px;border-bottom:1px solid var(--iv-line);gap:16px;min-height:55px;align-items:stretch}
 .iv-tabs button{position:relative;display:flex;align-items:center;gap:6px;padding:0;border:0;background:transparent;color:var(--iv-muted);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
 .iv-tabs button[aria-selected=true]{color:var(--iv-blue);font-weight:700}
@@ -76,11 +79,11 @@
 .iv-library-footer .iv-text-button{text-align:left;font-size:11px}
 .iv-library-footer p{font-size:10px}
 .iv-canvas-column{display:flex;flex-direction:column;min-width:0;min-height:0;background:#f5f8fa}
-.iv-canvas-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:55px;padding:8px 16px;border-bottom:1px solid var(--iv-line);background:#fff}
-.iv-canvas-label{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;white-space:nowrap}
+.iv-canvas-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px;padding:10px 16px;border-bottom:1px solid var(--iv-line);background:#fff}
+.iv-canvas-label{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;white-space:nowrap}
 .iv-canvas-label svg{color:var(--iv-blue)}
 .iv-canvas-toolbar>div:last-child{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
-.iv-canvas-toolbar .iv-button{font-size:11px;min-height:31px;padding:5px 9px}
+.iv-canvas-toolbar .iv-button{font-size:12px;min-height:38px;padding:7px 11px}
 .iv-canvas{position:relative;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;background-color:#f5f8fa;background-image:radial-gradient(#cbd8e0 1px,transparent 1px);background-size:19px 19px;scrollbar-color:#b5cad5 #edf3f6;scrollbar-width:thin;cursor:grab}
 .iv-canvas.is-pan-ready .iv-node,.iv-canvas.is-pan-ready .iv-node-handle{cursor:grab}
 .iv-canvas.is-panning,.iv-canvas.is-panning *{cursor:grabbing!important;user-select:none}
@@ -96,14 +99,14 @@
 .iv-wire-preview.is-valid{stroke:#27825b;stroke-dasharray:none}
 .iv-wire-preview.is-invalid{stroke:var(--iv-danger)}
 .iv-canvas.is-wiring,.iv-canvas.is-wiring *{cursor:crosshair!important;user-select:none}
-.iv-node{position:absolute;width:232px;border:1px solid #cbdce5;border-radius:10px;background:#fff;box-shadow:0 3px 10px #18394a0c;outline-offset:4px;cursor:pointer}
-.iv-node.is-selected{border-color:var(--iv-blue);box-shadow:0 0 0 2px #24779d22,0 5px 16px #17384d0c}
+.iv-node{position:absolute;width:232px;border:1px solid #cbdce5;border-radius:10px;background:#fff;outline-offset:4px;cursor:pointer}
+.iv-node.is-selected{border-color:var(--iv-blue);box-shadow:0 0 0 2px #24779d44}
 .iv-node.is-target{outline:1px dashed #4e99b9;outline-offset:5px}
 .iv-node.is-snap-target{outline:2px solid #27825b;outline-offset:5px}
 .iv-node.is-invalid-target{outline:2px dashed var(--iv-danger);outline-offset:5px}
 .iv-node.is-dragging{cursor:grabbing;z-index:5;box-shadow:0 12px 28px #17384d26}
 .iv-node-handle{display:flex;align-items:center;gap:9px;padding:10px 12px;min-height:42px;cursor:grab;touch-action:none;user-select:none;background:#f9fbfc;border-radius:10px 10px 0 0;border-bottom:1px solid #e6eef2}
-.iv-node-handle>span:nth-child(2){font-size:9px;font-weight:700;letter-spacing:.9px;color:var(--iv-muted)}
+.iv-node-handle>span:nth-child(2){font-size:10px;font-weight:700;letter-spacing:.4px;color:#416170}
 .iv-node-number{display:grid;place-items:center;min-width:23px;height:22px;border:1px solid var(--iv-line);border-radius:5px;font-size:10px;font-weight:700;background:#fff}
 .iv-node-grip{margin-left:auto;color:#678794;font-size:18px;line-height:1}
 .iv-node-thumbnail{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 10px 0;height:102px;border:1px dashed #cedfe7;border-radius:5px;background:#eff5f8;color:#527787;overflow:hidden;font-size:11px}
@@ -113,9 +116,9 @@
 .iv-node-play svg{width:16px;height:16px}
 .iv-node-info{padding:12px}
 .iv-node-info strong{display:block;min-height:1.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:700}
-.iv-node-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px;font-size:10px;color:var(--iv-muted)}
+.iv-node-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px;font-size:11px;color:var(--iv-muted)}
 .iv-node-choices{display:grid;gap:5px;padding:0 10px}
-.iv-node-choice{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;padding:6px 9px;border:1px solid #dce8ed;border-radius:5px;font-size:10px;background:#f6f9fb}
+.iv-node-choice{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:34px;padding:7px 9px;border:1px solid #dce8ed;border-radius:5px;font-size:11px;background:#f6f9fb}
 .iv-node-choice>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .iv-choice-destination{color:#476e83;font-size:9px;padding-left:6px;border-left:1px solid #d3e1e8}
 .iv-port{position:absolute;z-index:3;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;cursor:crosshair;touch-action:none}
@@ -128,9 +131,11 @@
 .iv-choice-port{right:-26px;top:50%;transform:translateY(-50%)}
 .iv-output-port{right:-17px;top:50%;transform:translateY(-50%)}
 .iv-node-footer{position:relative;margin-top:10px;border-top:1px solid #e7eef2}
-.iv-connect{display:flex;align-items:center;width:100%;min-height:36px;padding:9px 12px;border:0;border-radius:0 0 9px 9px;background:#fff;color:var(--iv-blue);font-size:10px;cursor:pointer}
+.iv-connect{display:flex;align-items:center;width:100%;min-height:38px;padding:9px 12px;border:0;border-radius:0 0 9px 9px;background:#fff;color:var(--iv-blue);font-size:11px;font-weight:600;cursor:pointer}
+.iv-connect:hover{background:#edf5f8}
+.iv-editor button:focus-visible,.iv-node:focus-visible{outline:2px solid var(--iv-blue);outline-offset:2px}
 .iv-connect[aria-pressed=true]{background:#eaf4f9;font-weight:700}
-.iv-canvas-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:9px 14px;min-height:51px;border-top:1px solid var(--iv-line);background:#fff;color:var(--iv-muted);font-size:10px}
+.iv-canvas-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 16px;min-height:55px;border-top:1px solid var(--iv-line);background:#fff;color:#416170;font-size:12px}
 .iv-view-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .iv-view-actions .iv-button{min-height:32px;padding:5px 9px;font-size:10px}
 .iv-zoom{display:flex;align-items:center;border:1px solid var(--iv-line);border-radius:5px;overflow:hidden}
@@ -150,6 +155,7 @@
 .iv-empty small{margin-top:12px;font-size:10px;color:var(--iv-muted)}
 .iv-inspector{position:absolute;top:66px;right:14px;bottom:14px;z-index:8;width:min(310px,calc(100% - 245px));border:1px solid #cfdee5;border-radius:8px;padding:0 18px 20px;box-shadow:0 12px 34px #17384d24}
 .iv-inspector[hidden]{display:none}
+.iv-workspace.iv-library-closed .iv-inspector{width:min(310px,calc(100% - 28px))}
 .iv-inspector-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:55px;border-bottom:1px solid var(--iv-line);margin-bottom:22px}
 .iv-inspector{background:#fbfdfe}
 .iv-inspector-heading{position:sticky;top:0;z-index:2;margin:0 -18px 20px;padding:0 18px;background:#fbfdfe}
@@ -248,3 +254,4 @@
 @media(max-width:760px){.iv-view-actions .iv-button{min-height:44px;font-size:11px}.iv-zoom button{min-width:44px;height:44px}.iv-canvas-footer{padding:8px 12px}}
 @media(max-width:760px){.iv-port{width:44px;height:44px}.iv-input-port{left:-23px;top:-1px}.iv-choice-port{right:-32px}.iv-output-port{right:-23px}}
 @media(max-width:760px){.iv-inspector #iv-scene-fields .iv-field input,.iv-inspector #iv-scene-fields .iv-field select,.iv-choice-editor .iv-field input,.iv-choice-editor .iv-field select{min-height:44px;font-size:16px}.iv-select-trigger{min-height:44px;font-size:16px}.iv-select-menu>input,.iv-select-option{min-height:44px;font-size:16px}.iv-choice-row{grid-template-columns:minmax(0,1fr) 110px}}
+@media(max-width:760px){.iv-workspace.iv-library-closed .iv-inspector{width:auto}}

@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ok = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'mp4', 'webm', 'mov', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
     if ($f['error'] || $f['size'] > 10485760 || !in_array($x, $ok, true)) back('media', 'invalid');
     $type = in_array($x, ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp']) ? 'image' : (in_array($x, ['mp4', 'webm', 'mov']) ? 'video' : (in_array($x, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt']) ? 'document' : 'others'));
-    $dir = "assets/$type/";
+    $dir = "uploads/$type/";
     if (!is_dir($dir)) mkdir($dir, 0775, true);
     $safe = preg_replace('/[^A-Za-z0-9._-]/', '_', $n);
     $path = $dir . bin2hex(random_bytes(16)) . '.' . $x;
@@ -270,7 +270,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="dashboard/dashboard.css?v=20261007-5">
   <link rel="stylesheet" href="dashboard/consistency.css?v=20261008-1">
-  <?php if ($page === 'interactive'): ?><link rel="stylesheet" href="dashboard/interactive.css?v=11"><?php endif ?>
+  <?php if ($page === 'interactive'): ?><link rel="stylesheet" href="dashboard/interactive.css?v=14"><?php endif ?>
 </head>
 
 <body class="<?= $page === 'interactive' ? 'interactive-page' . (($_GET['scenario'] ?? '') === '1' ? ' iv-fullscreen' : '') : '' ?>">
@@ -521,7 +521,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
     </main>
   </div>
   <script src="dashboard/dashboard.js?v=20261022-1"></script>
-<?php if ($page === 'interactive' && ($_GET['scenario'] ?? '') === '1'): ?><script src="dashboard/interactive.js?v=11"></script><?php endif ?>
+<?php if ($page === 'interactive' && ($_GET['scenario'] ?? '') === '1'): ?><script src="dashboard/interactive.js?v=14"></script><?php endif ?>
 </body>
 
 </html>

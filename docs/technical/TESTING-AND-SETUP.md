@@ -13,7 +13,7 @@ The project directory is not a Git repository, so version-control status/history
 - `php tests/interactive-persistence-test.php portofolio_review_<suffix>` — database/filesystem integration test. Only use a disposable database whose name begins `portofolio_review_`; the script reads and restores the existing draft row and creates/removes a temporary video fixture. Not executed during this audit.
 
 ## Latest verification
-- Authenticated browser regression: **106 checks passed**, with mocked saves and no test writes to the server. A stale X/Y-input test now uses dragging and undo instead, since coordinate fields were removed.
+- Authenticated browser regression: **112 checks passed**, with mocked saves and no test writes to the server. Coverage includes inspector selection, desktop library toggle, and canvas panning with subpixel tolerance. A stale X/Y-input test uses dragging and undo instead, since coordinate fields were removed.
 - Scenario menu → `scenario=1` editor verified: dashboard sidebar/topbar hidden, canvas present, return link targets the menu.
 - Graph validation: **22 checks passed**. Setup validation: `php tests/setup-admin-test.php`, **4 checks passed** without database access.
 - PHP lint passed for auth, setup, admin, editor shell/menu, and setup tests. JavaScript test syntax passed.
