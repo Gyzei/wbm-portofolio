@@ -17,10 +17,10 @@
 .iv-fullscreen .iv-status{margin:4px 20px;min-height:0}
 @media(max-width:760px){.iv-scenarios{padding:20px 16px}.iv-scenario{align-items:flex-start;flex-direction:column}.iv-fullscreen .iv-editor{height:auto;min-height:100dvh}.iv-fullscreen .iv-project-bar{padding:12px 16px}.iv-fullscreen .iv-canvas-column{height:70dvh}}
 .interactive-page{--iv-blue:#24779d;--iv-text:#17384d;--iv-muted:#597280;--iv-line:#dce6eb;--iv-danger:#a93532;background:#f4f7f9}
-.interactive-page .sidebar{width:210px}
-.interactive-page .topbar{position:relative;top:0;width:100%;max-width:none;margin:0;border:0;border-bottom:1px solid var(--iv-line);border-radius:0;padding:18px 28px;box-shadow:none}
-.interactive-page .topbar h1{font-family:'DM Sans',sans-serif;font-size:19px;letter-spacing:-.5px}
-.interactive-page .page-content{padding:0;max-width:none}
+.iv-fullscreen .sidebar{width:210px}
+.iv-fullscreen .topbar{position:relative;top:0;width:100%;max-width:none;margin:0;border:0;border-bottom:1px solid var(--iv-line);border-radius:0;padding:18px 28px;box-shadow:none}
+.iv-fullscreen .topbar h1{font-family:'DM Sans',sans-serif;font-size:19px;letter-spacing:-.5px}
+.iv-fullscreen .page-content{padding:0;max-width:none}
 .iv-editor{color:var(--iv-text);font-size:13px}
 .iv-editor *, .iv-preview-dialog *{box-sizing:border-box}
 .iv-editor button,.iv-preview-dialog button,.iv-confirm-dialog button{font-family:inherit}
@@ -255,3 +255,7 @@
 @media(max-width:760px){.iv-port{width:44px;height:44px}.iv-input-port{left:-23px;top:-1px}.iv-choice-port{right:-32px}.iv-output-port{right:-23px}}
 @media(max-width:760px){.iv-inspector #iv-scene-fields .iv-field input,.iv-inspector #iv-scene-fields .iv-field select,.iv-choice-editor .iv-field input,.iv-choice-editor .iv-field select{min-height:44px;font-size:16px}.iv-select-trigger{min-height:44px;font-size:16px}.iv-select-menu>input,.iv-select-option{min-height:44px;font-size:16px}.iv-choice-row{grid-template-columns:minmax(0,1fr) 110px}}
 @media(max-width:760px){.iv-workspace.iv-library-closed .iv-inspector{width:auto}}
+.iv-canvas:focus-visible,.iv-project-name input:focus-visible{outline:2px solid var(--iv-blue);outline-offset:-2px}
+.iv-library-intro p,.iv-library-footer p,.iv-hint,.iv-help{font-size:12px;line-height:1.6}
+.iv-view-actions .iv-button,.iv-zoom #iv-zoom-reset,#iv-save-state{font-size:12px}
+@media(max-width:760px){.iv-canvas-toolbar{align-items:flex-start;flex-wrap:wrap}.iv-canvas-toolbar>div:last-child{justify-content:flex-start}.iv-canvas-toolbar .iv-button,.iv-project-actions .iv-button,.iv-scene-list li>div>button{min-height:44px}.iv-scene-list li>div>button{min-width:44px}.iv-project-actions #iv-save-state{font-size:12px}}

@@ -17,8 +17,9 @@ try {
         interactiveReply(403, ['error' => 'Token sesi tidak valid. Simpan salinan draft lalu muat ulang halaman.']);
     }
     if (!is_int($input['revision'] ?? null) || $input['revision'] < 0) throw new InvalidArgumentException('Versi draft tidak valid.');
+    if (!is_int($input['scenarioId'] ?? null) || $input['scenarioId'] < 1) throw new InvalidArgumentException('Skenario tidak valid.');
     initializeInteractiveDraft($conn);
-    if (!saveInteractiveDraft($conn, $input['graph'] ?? null, $input['revision'])) interactiveReply(409, ['error' => 'Draft telah berubah di tab lain. Unduh salinan draft ini sebelum memuat ulang; perubahan tidak ditimpa.']);
+    if (!saveInteractiveDraft($conn, $input['graph'] ?? null, $input['revision'], $input['scenarioId'])) interactiveReply(409, ['error' => 'Draft telah berubah di tab lain. Unduh salinan draft ini sebelum memuat ulang; perubahan tidak ditimpa.']);
     interactiveReply(200, ['revision' => $input['revision'] + 1]);
 } catch (JsonException | InvalidArgumentException $error) {
     interactiveReply(422, ['error' => $error instanceof JsonException ? 'Format draft tidak valid.' : $error->getMessage()]);

@@ -4,10 +4,10 @@
 PHP/MySQL portfolio and admin CMS with an interactive branching-video editor.
 
 ## Current State
-Scenario navigation verified. Story Flow library toggle and editor regression passed 112 browser checks. New uploads use `uploads/`; legacy `assets/` remains supported. Admin setup is CLI-only.
+Interactive video now supports separate scenarios; legacy migration and persistence passed 27 checks on isolated databases. Browser verification remains outstanding. Uploads use `uploads/`; legacy `assets/` remains supported. Admin setup is CLI-only.
 
 ## TODO
-- [ ] Run editor browser regression after logging in to verify Rapikan changes.
+- [ ] Verify scenario creation, switching and editor regression in an authenticated browser at desktop and mobile widths.
 - [ ] Verify successful first-admin setup on a disposable database.
 - [ ] Confirm existing administrator password is not the former default before deployment.
 - [ ] Verify and fix undo grouping when edits switch between different fields within 700 ms.
@@ -21,8 +21,8 @@ Scenario navigation verified. Story Flow library toggle and editor regression pa
 - Design: [[docs/design/DESIGN]]
 - Architecture: [[docs/architecture/ARCHITECTURE]]
 - Decisions: [[docs/decisions/DECISIONS]]
-- Docs index: [[docs/README]]
-- Feature map: [[docs/features/interactive-video-draft]] and [[docs/README]]
+- Docs index: [[README]]
+- Feature map: [[docs/features/interactive-video-draft]]
 - Testing: [[docs/technical/TESTING-AND-SETUP]]
 
 ## Session Handoff

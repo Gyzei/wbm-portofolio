@@ -15,7 +15,7 @@
 - `uploads/` stores new uploaded files; `assets/` contains site assets and legacy media. `fileBrowser` stores media relative paths and display names.
 
 ## Data and trust boundaries
-MySQL is authoritative for account and CMS records. The interactive graph is JSON in one `interactive_video` row with an integer revision. Existing video files under `uploads/` and legacy `assets/` are eligible for interactive scenes. The API gates writes on the primary logged-in account, POST, 1 MB request limit, session token, revision, graph schema, and current media IDs.
+MySQL is authoritative for account and CMS records. Each interactive scenario is a JSON graph in an `interactive_video` row with its own revision. Saves and media deletion coordinate through the original row lock. Existing video files under `uploads/` and legacy `assets/` are eligible for interactive scenes. The API gates writes on the primary logged-in account, POST, 1 MB request limit, session token, scenario ID, revision, graph schema, and current media IDs.
 
 The public page and admin share the same MySQL content database. Uploads write media to disk and then create a `fileBrowser` record. Database connection defaults are in `koneksi.php`; no environment-variable configuration is evidenced.
 

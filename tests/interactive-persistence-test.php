@@ -31,6 +31,7 @@ $name = 'persistence_test_' . bin2hex(random_bytes(8)) . '.webm';
 $relative = 'assets/video/' . $name;
 $absolute = __DIR__ . '/../' . $relative;
 $ids = [];
+$scenarioId = null;
 $handle = fopen($absolute, 'x');
 if (!$handle) throw new RuntimeException('Cannot create the isolated media fixture.');
 fwrite($handle, 'test fixture');
@@ -56,6 +57,11 @@ try {
     check(deleteInteractiveMedia($b, $ids[1]) === 'inuse', 'Canonical file alias must be protected.');
     check(is_file($absolute), 'Protected media file must remain intact.');
 
+    $scenarioId = createInteractiveScenario($a);
+    check(saveInteractiveDraft($a, $graph, 0, $scenarioId), 'A new scenario must save independently.');
+    check(!saveInteractiveDraft($b, $graph, 0, $scenarioId), 'A stale scenario revision must not overwrite it.');
+    check(interactiveDraft($b, false, $scenarioId)['graph'] === $graph, 'A second scenario must reload independently.');
+
     $a->begin_transaction();
     interactiveDraft($a, true);
     blocked(static fn() => deleteInteractiveMedia($b, $ids[1]));
@@ -65,6 +71,8 @@ try {
 
     $empty = ['title' => 'Test', 'startId' => null, 'scenes' => []];
     check(saveInteractiveDraft($a, $empty, $revision++), 'Unlinking the scene must save.');
+    check(deleteInteractiveMedia($b, $ids[1]) === 'inuse', 'Media referenced only by another scenario must remain protected.');
+    check(saveInteractiveDraft($a, $empty, 1, $scenarioId), 'The second scenario must unlink independently.');
     check(deleteInteractiveMedia($b, $ids[1]) === 'deleted', 'Unused alias must be deletable.');
     check(is_file($absolute), 'Deleting one alias must retain the file for remaining entries.');
 
@@ -95,6 +103,7 @@ try {
     $a->rollback();
     $b->rollback();
     foreach ($ids as $id) $a->query('DELETE FROM fileBrowser WHERE id=' . $id);
+    if ($scenarioId !== null) $a->query('DELETE FROM interactive_video WHERE id=' . $scenarioId);
     $restore = $a->prepare('UPDATE interactive_video SET graph=?,revision=?,updated_at=? WHERE id=1');
     $restore->bind_param('sis', $original['graph'], $original['revision'], $original['updated_at']);
     $restore->execute();

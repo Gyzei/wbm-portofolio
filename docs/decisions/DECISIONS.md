@@ -5,12 +5,9 @@
 - Existing users and passwords remain unchanged; old/default credentials must be changed through authenticated Settings before deployment.
 - Evidence: `auth.php`, `setup-admin.php`, and `tests/setup-admin-test.php`. Invalid-input checks and web denial were tested; successful setup on an empty disposable database is unverified.
 
-#### Single shared administrator draft
-- Status: Accepted (verified implementation).
-- Context: The current admin login accepts the primary account; the editor maintains one project-wide draft.
-- Decision: Store one interactive-video graph in MySQL, protected by an integer revision and row locking.
-- Evidence: `auth.php` (`requireLogin`/`primaryAccountId`), `dashboard/interactive-store.php` (`interactive_video`, `saveInteractiveDraft`).
-- Consequences: Separate stories would require a story identifier and a revised persistence model.
+#### Independent administrator scenarios
+- The original shared draft is preserved as scenario 1. Additional scenarios use separate graphs and revisions; the original row lock coordinates saves and media deletion across all scenarios.
+- Legacy scenario IDs are widened and made auto-increment on first creation; this requires database ALTER permission. Persistence and legacy migration were checked on disposable databases, not the live database.
 
 #### Optional per-choice timer
 - Status: Accepted (implemented; browser regression still needs execution).

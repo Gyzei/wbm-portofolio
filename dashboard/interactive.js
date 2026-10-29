@@ -815,7 +815,7 @@
     const sent = snapshot();
     saving = true; $('save').disabled = true; dirty(); announce('Draft sedang disimpan…');
     try {
-      const response = await fetch('dashboard/interactive-api.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({graph:JSON.parse(sent), revision:data.revision, token:data.token})});
+      const response = await fetch('dashboard/interactive-api.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({graph:JSON.parse(sent), revision:data.revision, token:data.token, scenarioId:data.scenarioId})});
       const result = await response.json().catch(() => { throw new Error('Respons server tidak valid. Draft tetap ada di halaman ini; coba simpan kembali.'); });
       if (!response.ok) throw new Error(result.error || 'Draft gagal disimpan. Coba kembali.');
       data.revision = result.revision; baseline = sent;

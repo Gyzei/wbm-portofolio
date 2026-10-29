@@ -1,7 +1,7 @@
 # Product Requirements — Portfolio CMS
 
 ## Overview
-The project is a public personal-portfolio site backed by an administrator CMS. Administrators maintain portfolio projects, featured highlights, profile details, and uploaded media. The CMS also has a single shared draft editor for branching interactive videos.
+The project is a public personal-portfolio site backed by an administrator CMS. Administrators maintain portfolio projects, featured highlights, profile details, uploaded media, and separate branching interactive-video scenarios.
 
 ## Users and objectives
 - **Portfolio visitor:** browse project work, featured highlights, and profile information.
@@ -26,6 +26,6 @@ The project is a public personal-portfolio site backed by an administrator CMS. 
 - A media item in use is protected from deletion.
 
 ## Scope exclusions and unknowns
-- Multiple independent interactive-story drafts are not implemented; the current editor stores one shared draft.
+- A public interactive-video player is not implemented; scenarios are managed and previewed in the admin editor.
 - Production hosting/deployment requirements and supported browser matrix are **unknown** from repository evidence.
 - No package manifest or automated build configuration is present in the project root.

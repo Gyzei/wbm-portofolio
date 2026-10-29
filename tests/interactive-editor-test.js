@@ -20,7 +20,7 @@ document.getElementById('run').addEventListener('click', async () => {
       const doc = template.cloneNode(true), base = doc.createElement('base');
       base.href = url.href;
       doc.head.prepend(base);
-      doc.getElementById('iv-data').textContent = JSON.stringify({graph:clone(graph), media, token:'test-token', revision});
+      doc.getElementById('iv-data').textContent = JSON.stringify({graph:clone(graph), media, token:'test-token', revision, scenarioId:1});
       frame = document.createElement('iframe');
       frame.title = 'Editor test sandbox';
       frame.style = 'position:absolute;left:-4000px;top:0;width:1440px;height:900px';
@@ -31,7 +31,7 @@ document.getElementById('run').addEventListener('click', async () => {
       frame.contentWindow.fetch = async (address, options) => {
         check(new URL(address, url).pathname.endsWith('/dashboard/interactive-api.php') && options.method === 'POST', 'Only the expected save request is allowed.');
         const input = JSON.parse(options.body);
-        check(input.token === 'test-token' && input.revision === revision, 'Save must send the current token and revision.');
+        check(input.token === 'test-token' && input.revision === revision && input.scenarioId === 1, 'Save must send the current token, revision and scenario.');
         stored = clone(input.graph);
         return new Response(JSON.stringify({revision:++revision}), {status:200});
       };

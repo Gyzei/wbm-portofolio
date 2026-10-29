@@ -13,6 +13,7 @@ The project directory is not a Git repository, so version-control status/history
 - `php tests/interactive-persistence-test.php portofolio_review_<suffix>` — database/filesystem integration test. Only use a disposable database whose name begins `portofolio_review_`; the script reads and restores the existing draft row and creates/removes a temporary video fixture. Not executed during this audit.
 
 ## Latest verification
+- Multi-scenario persistence: **27 checks passed** on each of two isolated databases, one fresh and one with the legacy tinyint schema. These exercise independent saves, stale revisions, migration and cross-scenario media protection. Authenticated scenario UI has not yet been verified. The test databases `portofolio_review_scenarios_20261029` and `portofolio_review_legacy_scenarios_20261029` were retained.
 - Authenticated browser regression: **112 checks passed**, with mocked saves and no test writes to the server. Coverage includes inspector selection, desktop library toggle, and canvas panning with subpixel tolerance. A stale X/Y-input test uses dragging and undo instead, since coordinate fields were removed.
 - Scenario menu → `scenario=1` editor verified: dashboard sidebar/topbar hidden, canvas present, return link targets the menu.
 - Graph validation: **22 checks passed**. Setup validation: `php tests/setup-admin-test.php`, **4 checks passed** without database access.

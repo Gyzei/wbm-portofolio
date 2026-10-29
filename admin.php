@@ -20,6 +20,7 @@ function mediaFileSizeLabel($address)
   return number_format($bytes / (1024 ** $unit), $unit ? 2 : 0) . ' ' . ['B', 'KB', 'MB', 'GB', 'TB'][$unit];
 }
 $page = $_GET['page'] ?? 'projects';
+$scenarioId = isset($_GET['scenario']) ? filter_var($_GET['scenario'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 2147483647]]) : false;
 if ($page === 'slides') {
   header('Location: admin.php?page=projects' . (isset($_GET['edit']) ? '&highlight_edit=' . (int)$_GET['edit'] : ''));
   exit;
@@ -36,6 +37,19 @@ $settingsError = '';
 $settingsValues = $account;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $a = $_POST['action'] ?? '';
+  if ($a === 'create_scenario') {
+    if (!hash_equals($_SESSION['settings_token'], (string)($_POST['csrf_token'] ?? ''))) back('interactive', 'invalid');
+    require_once __DIR__ . '/dashboard/interactive-store.php';
+    try {
+      initializeInteractiveDraft($conn);
+      $newScenarioId = createInteractiveScenario($conn);
+      header('Location: admin.php?page=interactive&scenario=' . $newScenarioId);
+      exit;
+    } catch (Throwable $error) {
+      error_log('Create interactive scenario: ' . $error->getMessage());
+      back('interactive', 'invalid');
+    }
+  }
   if ($a === 'account_settings') {
     $name = trim($_POST['display_name'] ?? '');
     $username = trim($_POST['username'] ?? '');
@@ -226,6 +240,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     back('profile', 'saved');
   }
 }
+if ($page === 'interactive' && isset($_GET['scenario'])) {
+  if (!$scenarioId) back('interactive', 'invalid');
+  require_once __DIR__ . '/dashboard/interactive-store.php';
+  initializeInteractiveDraft($conn);
+  try { interactiveDraft($conn, false, $scenarioId); }
+  catch (InvalidArgumentException $error) { back('interactive', 'invalid'); }
+}
 $profile = ['name' => 'Administrator', 'username' => 'admin', 'email' => 'admin@wbm.local', 'phone' => '', 'photo' => '', 'description' => ''];
 $r = $conn->query('SELECT * FROM profile WHERE id=1');
 if ($r && $x = $r->fetch_assoc()) $profile = $x;
@@ -270,10 +291,10 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="dashboard/dashboard.css?v=20261007-5">
   <link rel="stylesheet" href="dashboard/consistency.css?v=20261008-1">
-  <?php if ($page === 'interactive'): ?><link rel="stylesheet" href="dashboard/interactive.css?v=14"><?php endif ?>
+  <?php if ($page === 'interactive'): ?><link rel="stylesheet" href="dashboard/interactive.css?v=15"><?php endif ?>
 </head>
 
-<body class="<?= $page === 'interactive' ? 'interactive-page' . (($_GET['scenario'] ?? '') === '1' ? ' iv-fullscreen' : '') : '' ?>">
+<body class="<?= $page === 'interactive' ? 'interactive-page' . ($scenarioId ? ' iv-fullscreen' : '') : '' ?>">
   <div class="shell">
     <button class="mobile-nav-overlay" type="button" aria-label="Close navigation" hidden></button>
     <aside class="sidebar" id="sidebar">
@@ -394,7 +415,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
               addEventListener('DOMContentLoaded', () => document.getElementById('project-modal').showModal())
             </script><?php endif ?>
         <?php elseif ($page === 'interactive'): ?>
-          <?php require __DIR__ . (($_GET['scenario'] ?? '') === '1' ? '/dashboard/interactive.php' : '/dashboard/interactive-menu.php'); ?>
+          <?php require __DIR__ . ($scenarioId ? '/dashboard/interactive.php' : '/dashboard/interactive-menu.php'); ?>
         <?php elseif ($page === 'media'): ?>
           <section class="content panel media-browser-panel">
             <div class="section-head">
@@ -521,7 +542,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
     </main>
   </div>
   <script src="dashboard/dashboard.js?v=20261022-1"></script>
-<?php if ($page === 'interactive' && ($_GET['scenario'] ?? '') === '1'): ?><script src="dashboard/interactive.js?v=14"></script><?php endif ?>
+<?php if ($page === 'interactive' && $scenarioId): ?><script src="dashboard/interactive.js?v=15"></script><?php endif ?>
 </body>
 
 </html>

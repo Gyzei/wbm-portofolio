@@ -3,7 +3,7 @@
 - [[docs/PRD/PRD]] — verified product scope and behavior for the portfolio CMS.
 - [[docs/design/DESIGN]] — interactive editor components, preview behavior, and save flow.
 - [[docs/architecture/ARCHITECTURE]] — application modules, technology stack, and data boundaries.
-- [[docs/decisions/DECISIONS]] — shared draft, timers, and media safety decisions.
+- [[docs/decisions/DECISIONS]] — scenario storage, timers, and media safety decisions.
 - [[docs/technical/TESTING-AND-SETUP]] — local assumptions and safe test commands.
 - [[docs/features/story-flow-editor]] — story flow controls, canvas behavior, and verification.
 - [[docs/features/public-portfolio]] — visitor portfolio, highlights, and project browsing.
