@@ -111,10 +111,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
   if ($a === 'delproject') {
     $id = (int)$_POST['id'];
-    $q = $conn->prepare('DELETE FROM projects WHERE id=?');
-    $q->bind_param('i', $id);
-    $q->execute();
-    back('projects', 'deleted');
+    require_once __DIR__ . '/dashboard/project-store.php';
+    try {
+      back('projects', deleteProject($conn, $id) ? 'deleted' : 'invalid');
+    } catch (Throwable $error) {
+      error_log('Project delete: ' . $error->getMessage());
+      back('projects', 'projectdeletefailed');
+    }
   }
   if ($a === 'slide') {
     $id = (int)($_POST['id'] ?? 0);
@@ -129,19 +132,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $orderRow = $orderResult ? $orderResult->fetch_assoc() : null;
       $o = max(1, (int)($orderRow['next_order'] ?? 1));
     }
-    $q = $conn->prepare('SELECT title,description,image,project_link FROM projects WHERE id=?');
-    $q->bind_param('i', $pid);
-    $q->execute();
-    $p = $q->get_result()->fetch_assoc();
-    if (!$p || !$p['image']) back('slides', 'invalid');
-    if ($id) {
-      $q = $conn->prepare('UPDATE slides SET project_id=?,title=?,description=?,image=?,link=?,slide_order=? WHERE id=?');
-      $q->bind_param('issssii', $pid, $p['title'], $p['description'], $p['image'], $p['project_link'], $o, $id);
-    } else {
-      $q = $conn->prepare('INSERT INTO slides(project_id,title,description,image,link,slide_order)VALUES(?,?,?,?,?,?)');
-      $q->bind_param('issssi', $pid, $p['title'], $p['description'], $p['image'], $p['project_link'], $o);
+    $conn->begin_transaction();
+    try {
+      $q = $conn->prepare('SELECT title,description,image,project_link FROM projects WHERE id=? FOR UPDATE');
+      $q->bind_param('i', $pid);
+      $q->execute();
+      $p = $q->get_result()->fetch_assoc();
+      if (!$p || !$p['image']) { $conn->rollback(); back('slides', 'invalid'); }
+      if ($id) {
+        $q = $conn->prepare('UPDATE slides SET project_id=?,title=?,description=?,image=?,link=?,slide_order=? WHERE id=?');
+        $q->bind_param('issssii', $pid, $p['title'], $p['description'], $p['image'], $p['project_link'], $o, $id);
+      } else {
+        $q = $conn->prepare('INSERT INTO slides(project_id,title,description,image,link,slide_order)VALUES(?,?,?,?,?,?)');
+        $q->bind_param('issssi', $pid, $p['title'], $p['description'], $p['image'], $p['project_link'], $o);
+      }
+      $q->execute();
+      $conn->commit();
+    } catch (Throwable $error) {
+      $conn->rollback();
+      error_log('Highlight save: ' . $error->getMessage());
+      back('slides', 'invalid');
     }
-    $q->execute();
     back('slides', 'saved');
   }
   if ($a === 'delslide') {
@@ -277,7 +288,7 @@ $edit = null;
 $highlightEdit = null;
 if (isset($_GET['highlight_edit'])) foreach ($slides as $slide) if ($slide['id'] == (int)$_GET['highlight_edit']) $highlightEdit = $slide;
 if (isset($_GET['edit'])) foreach ($page === 'slides' ? $slides : $projects as $x) if ($x['id'] == (int)$_GET['edit']) $edit = $x;
-$msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil dihapus.', 'uploaded' => 'Media berhasil diunggah.', 'invalid' => 'Periksa data wajib atau format file.', 'exists' => 'Username sudah digunakan.', 'inuse' => 'Video masih digunakan oleh scene. Lepaskan video di editor Video Interaktif dan simpan terlebih dahulu.', 'deletefailed' => 'Media belum dapat dihapus. Periksa file atau koneksi database, lalu coba lagi.', 'cleanupfailed' => 'Entri media telah dihapus, tetapi file fisik belum terhapus. Periksa log server untuk membersihkan file tersebut.'];
+$msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil dihapus.', 'uploaded' => 'Media berhasil diunggah.', 'invalid' => 'Periksa data wajib atau format file.', 'exists' => 'Username sudah digunakan.', 'inuse' => 'Video masih digunakan oleh scene. Lepaskan video di editor Video Interaktif dan simpan terlebih dahulu.', 'deletefailed' => 'Media belum dapat dihapus. Periksa file atau koneksi database, lalu coba lagi.', 'projectdeletefailed' => 'Project dan highlight belum dapat dihapus. Coba lagi.', 'cleanupfailed' => 'Entri media telah dihapus, tetapi file fisik belum terhapus. Periksa log server untuk membersihkan file tersebut.'];
 ?>
 <!doctype html>
 <html lang="id">
@@ -388,7 +399,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
               </table>
             </div>
           </section>
-          <dialog class="product-editor confirmation-dialog" id="project-list-delete-dialog"><form method="dialog"><div class="editor-head"><div><p class="eyebrow">Confirm action</p><h2>Delete this project?</h2></div><button class="icon-button" value="cancel" formnovalidate aria-label="Close confirmation">&times;</button></div><p class="confirmation-message">This will permanently delete this project. This action cannot be undone.</p><div class="confirmation-field"><span>Type <button class="confirmation-product-name" id="copy-project-list-delete-name" type="button" title="Copy project name"><span id="project-list-delete-label"></span><svg viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="1.5"/><path d="M15 9V6.5A1.5 1.5 0 0 0 13.5 5h-8A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16H9"/></svg></button> to confirm</span><input id="confirm-project-list-delete-name" autocomplete="off" spellcheck="false" placeholder="Start typing the project name"></div><div class="editor-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="delete-button" id="confirm-project-list-delete" type="button" disabled>Delete project</button></div></form></dialog><form id="delete-project-list-form" method="post" hidden><input type="hidden" name="action" value="delproject"><input type="hidden" name="id" id="delete-project-list-id" value=""></form>
+          <dialog class="product-editor confirmation-dialog" id="project-list-delete-dialog"><form method="dialog"><div class="editor-head"><div><p class="eyebrow">Confirm action</p><h2>Delete this project?</h2></div><button class="icon-button" value="cancel" formnovalidate aria-label="Close confirmation">&times;</button></div><p class="confirmation-message">This permanently deletes the project and its featured highlights. This action cannot be undone.</p><div class="confirmation-field"><span>Type <button class="confirmation-product-name" id="copy-project-list-delete-name" type="button" title="Copy project name"><span id="project-list-delete-label"></span><svg viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="1.5"/><path d="M15 9V6.5A1.5 1.5 0 0 0 13.5 5h-8A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16H9"/></svg></button> to confirm</span><input id="confirm-project-list-delete-name" autocomplete="off" spellcheck="false" placeholder="Start typing the project name"></div><div class="editor-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="delete-button" id="confirm-project-list-delete" type="button" disabled>Delete project</button></div></form></dialog><form id="delete-project-list-form" method="post" hidden><input type="hidden" name="action" value="delproject"><input type="hidden" name="id" id="delete-project-list-id" value=""></form>
           <dialog id="project-modal" class="product-editor">
             <form method="post" id="project-form"><input name="action" value="project" type="hidden"><input name="id" value="<?= $edit['id'] ?? '' ?>" type="hidden">
               <div class="editor-head">
@@ -404,7 +415,7 @@ $msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil 
               <div class="editor-actions"><?php if($edit):?><button class="delete-button" type="button" id="delete-project">Delete</button><?php endif?><span class="editor-spacer"></span><button class="cancel-button" type="button" data-close>Cancel</button><button class="primary" type="submit"><?= $edit ? 'Save changes' : 'Create project' ?></button></div>
             </form>
           </dialog>
-          <?php if($edit):?><dialog class="product-editor confirmation-dialog" id="project-delete-dialog"><form method="dialog"><div class="editor-head"><div><p class="eyebrow">Confirm action</p><h2>Delete this project?</h2></div><button class="icon-button" value="cancel" formnovalidate aria-label="Close confirmation">&times;</button></div><p class="confirmation-message">This will permanently delete this project. This action cannot be undone.</p><div class="confirmation-field"><span id="confirm-project-delete-instruction">Type <button class="confirmation-product-name" id="copy-project-delete-name" type="button" title="Copy project name"><span><?=e($edit['title'])?></span><svg viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="1.5"/><path d="M15 9V6.5A1.5 1.5 0 0 0 13.5 5h-8A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16H9"/></svg></button> to confirm</span><input id="confirm-project-delete-name" autocomplete="off" spellcheck="false" placeholder="Start typing the project name"></div><div class="editor-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="delete-button" id="confirm-project-delete" type="button" disabled>Delete project</button></div></form></dialog><form id="delete-project-form" method="post" hidden><input type="hidden" name="action" value="delproject"><input type="hidden" name="id" value="<?=$edit['id']?>"></form><?php endif?>
+          <?php if($edit):?><dialog class="product-editor confirmation-dialog" id="project-delete-dialog"><form method="dialog"><div class="editor-head"><div><p class="eyebrow">Confirm action</p><h2>Delete this project?</h2></div><button class="icon-button" value="cancel" formnovalidate aria-label="Close confirmation">&times;</button></div><p class="confirmation-message">This permanently deletes the project and its featured highlights. This action cannot be undone.</p><div class="confirmation-field"><span id="confirm-project-delete-instruction">Type <button class="confirmation-product-name" id="copy-project-delete-name" type="button" title="Copy project name"><span><?=e($edit['title'])?></span><svg viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="1.5"/><path d="M15 9V6.5A1.5 1.5 0 0 0 13.5 5h-8A1.5 1.5 0 0 0 4 6.5v8A1.5 1.5 0 0 0 5.5 16H9"/></svg></button> to confirm</span><input id="confirm-project-delete-name" autocomplete="off" spellcheck="false" placeholder="Start typing the project name"></div><div class="editor-actions"><button class="cancel-button" value="cancel">Cancel</button><button class="delete-button" id="confirm-project-delete" type="button" disabled>Delete project</button></div></form></dialog><form id="delete-project-form" method="post" hidden><input type="hidden" name="action" value="delproject"><input type="hidden" name="id" value="<?=$edit['id']?>"></form><?php endif?>
           <?php if ($edit): ?><script>
               addEventListener('DOMContentLoaded', () => {
                 document.getElementById('project-modal').showModal();

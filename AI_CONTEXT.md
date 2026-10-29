@@ -8,7 +8,7 @@ Interactive video now supports separate scenarios; legacy migration and persiste
 
 ## TODO
 - [ ] Fix admin CSRF gaps, unsafe SVG uploads and project URL schemes; see [[docs/technical/REPOSITORY-AUDIT]].
-- [ ] Fix orphaned highlights when deleting a project and add login throttling.
+- [ ] Add login throttling.
 - [ ] Handle failed media database inserts without leaving uploaded files behind.
 - [ ] Verify scenario creation, switching and editor regression in an authenticated browser at desktop and mobile widths.
 - [ ] Verify successful first-admin setup on a disposable database.
