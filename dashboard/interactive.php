@@ -1,0 +1,46 @@
+<?php
+require_once __DIR__ . '/interactive-store.php';
+initializeInteractiveDraft($conn);
+$draft = interactiveDraft($conn);
+$videoMedia = interactiveMedia($conn);
+$editorData = $draft + ['media' => $videoMedia, 'token' => $_SESSION['settings_token']];
+?>
+<section class="iv-editor" id="iv-editor" aria-label="Editor video interaktif">
+  <div class="iv-project-bar">
+    <div class="iv-project-name"><span class="iv-kicker">STORY BUILDER <span>/</span> DRAFT</span><label class="iv-sr" for="iv-title">Judul video interaktif</label><input id="iv-title" maxlength="150" value="<?= e($draft['graph']['title']) ?>" required></div>
+    <div class="iv-project-actions"><span id="iv-save-state">Draft tersimpan</span><button type="button" class="iv-button" id="iv-undo" title="Urungkan (Ctrl+Z)" aria-label="Urungkan perubahan" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5M4 9h9a7 7 0 0 1 0 14h-2"/></svg>Urungkan</button><button type="button" class="iv-button" id="iv-redo" title="Ulangi (Ctrl+Shift+Z)" aria-label="Ulangi perubahan" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5m5 5h-9a7 7 0 0 0 0 14h2"/></svg>Ulangi</button><button type="button" class="iv-button" id="iv-preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 11 7-11 7z"/></svg>Preview</button><button type="button" class="iv-button iv-primary" id="iv-save"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>Simpan draft</button></div>
+  </div>
+  <div class="iv-workspace">
+    <aside class="iv-library" aria-label="Media dan urutan scene">
+      <div class="iv-tabs" role="tablist" aria-label="Library editor"><button id="iv-media-tab" role="tab" aria-selected="true" aria-controls="iv-media-panel" data-iv-tab="media" type="button">Media video <span><?= count($videoMedia) ?></span></button><button id="iv-scenes-tab" role="tab" aria-selected="false" aria-controls="iv-scenes-panel" tabindex="-1" data-iv-tab="scenes" type="button">Scene <span id="iv-scene-count">0</span></button></div>
+      <div id="iv-media-panel" role="tabpanel" aria-labelledby="iv-media-tab">
+        <div class="iv-library-intro"><h2>Media Library</h2><p>Tarik video ke kanvas untuk membuat scene, atau ke scene untuk mengganti videonya.</p></div>
+        <label class="iv-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="iv-media-search" type="search" placeholder="Cari video…" aria-label="Cari video"></label>
+        <div id="iv-media-list" class="iv-media-list"></div>
+        <div class="iv-library-footer"><a href="admin.php?page=media" target="_blank" rel="noopener" class="iv-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/></svg>Upload di Media Library ↗</a><button class="iv-text-button" id="iv-reload" type="button">Muat ulang daftar video</button><p>MP4, WebM, MOV · Upload maks. 10 MB.<br>Simpan draft sebelum memuat ulang.</p></div>
+      </div>
+      <div id="iv-scenes-panel" role="tabpanel" aria-labelledby="iv-scenes-tab" hidden><div class="iv-library-intro"><h2>Urutan scene</h2><p>Drag untuk reorder, atau gunakan tombol panah. Urutan tidak mengubah hubungan cabang.</p></div><ol id="iv-scene-list" class="iv-scene-list"></ol><button type="button" class="iv-button iv-add-list" data-iv-add>+ Tambah scene</button></div>
+    </aside>
+    <div class="iv-canvas-column">
+      <div class="iv-canvas-toolbar"><div class="iv-canvas-label"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="5" height="7" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="16" y="16" width="5" height="5" rx="1"/><path d="M8 11h4V5.5h4M12 11v7.5h4"/></svg>Story flow</div><div><button class="iv-button" type="button" id="iv-inspector-toggle" aria-controls="iv-inspector" aria-expanded="true">Inspector</button><button class="iv-button" type="button" id="iv-arrange" title="Susun scene mengikuti urutan daftar">Rapikan</button><button class="iv-button" type="button" data-iv-add>+ Scene</button></div></div>
+      <div class="iv-canvas" id="iv-canvas" tabindex="0" aria-label="Kanvas graph. Drag area kosong untuk menggeser tampilan. Panah pada kanvas menggeser tampilan; panah pada scene memindahkan scene." aria-describedby="iv-graph-help">
+        <div class="iv-world-size" id="iv-world-size"><div class="iv-world" id="iv-world"><svg class="iv-edges" id="iv-edges" aria-label="Hubungan antar-scene"></svg><div id="iv-nodes"></div><svg class="iv-edges iv-wire-preview" id="iv-wire-preview" aria-hidden="true" hidden><path id="iv-wire-path"/></svg></div></div>
+        <div class="iv-empty" id="iv-empty"><div class="iv-empty-diagram" aria-hidden="true"><span>01</span><svg viewBox="0 0 110 100"><path d="M0 50h45Q55 50 55 40V20Q55 10 65 10h45M55 50v30q0 10 10 10h45"/></svg><div><span>02</span><span>03</span></div></div><span class="iv-kicker">SATU VIDEO. BANYAK KEMUNGKINAN.</span><h2>Ceritamu, lebih dari satu jalan.</h2><p>Mulai dengan sebuah scene. Tambahkan video,<br>lalu hubungkan pilihan untuk membangun cerita.</p><button class="iv-button iv-primary" type="button" data-iv-add>+ Buat scene pertama</button><small>Atau tarik video dari Media Library ke sini</small></div>
+      </div>
+      <div class="iv-canvas-footer"><span id="iv-flow-count">0 scene · 0 cabang</span><div class="iv-view-actions" role="group" aria-label="Navigasi kanvas"><button class="iv-button" type="button" id="iv-fit" title="Lihat semua scene (0)">Lihat semua</button><button class="iv-button" type="button" id="iv-focus" title="Fokus ke scene terpilih (F)" disabled>Fokus scene</button></div><div class="iv-zoom" role="group" aria-label="Zoom kanvas"><button type="button" id="iv-zoom-out" aria-label="Perkecil kanvas" title="Perkecil (−)">−</button><button type="button" id="iv-zoom-reset" aria-label="Reset zoom ke 100 persen" title="Reset zoom ke 100%">100%</button><button type="button" id="iv-zoom-in" aria-label="Perbesar kanvas" title="Perbesar (+)">+</button></div></div>
+    </div>
+     <aside class="iv-inspector" id="iv-inspector" aria-label="Pengaturan scene"><div class="iv-inspector-heading"><span class="iv-kicker">SCENE INSPECTOR</span><div><span id="iv-selected-number">—</span><button class="iv-inspector-close" id="iv-inspector-close" type="button" aria-label="Tutup inspector">×</button></div></div><div id="iv-inspector-empty"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m15 9 24 17-13 2-7 12z"/></svg><h2>Detail ada di sini</h2><p>Pilih scene di kanvas untuk mengatur video dan pilihan ceritanya.</p></div><div id="iv-scene-fields" hidden>
+      <label class="iv-field">Nama scene<input id="iv-scene-title" maxlength="150" required></label>
+      <div class="iv-field"><span>Video</span><div id="iv-scene-media"></div></div><div class="iv-inspector-video" id="iv-inspector-video"></div>
+      <button type="button" class="iv-button iv-start-button" id="iv-set-start">Jadikan scene awal</button>
+      <div class="iv-branch-heading"><h2>Pilihan & cabang</h2><span id="iv-choice-count">0 / 8</span></div><p class="iv-hint">Atur waktu dalam menit:detik (mm:ss). Batas mengikuti durasi video; kosong berarti pilihan muncul setelah video selesai.</p><div id="iv-choices"></div><button type="button" class="iv-button iv-add-choice" id="iv-add-choice">+ Tambah pilihan</button>
+      <button type="button" class="iv-button iv-danger" id="iv-delete-scene">Hapus scene</button>
+    </div></aside>
+  </div>
+  <div class="iv-help" id="iv-graph-help"><span><b>Hubungkan:</b> tarik port biru ke input kuning, atau klik + lalu scene tujuan. Esc untuk batal. Canvas meluas otomatis di tepi.</span><span><b>Navigasi:</b> drag area kosong / Space+drag · Alt+scroll untuk zoom · 0 lihat semua · F fokus scene</span></div>
+  <p class="iv-status" id="iv-status" role="status" aria-live="polite"></p>
+  <button class="iv-text-button" type="button" id="iv-download">Unduh salinan draft (.json)</button>
+</section>
+<dialog id="iv-preview-dialog" class="iv-preview-dialog" aria-labelledby="iv-preview-title"><div class="iv-preview-head"><div><span class="iv-kicker">INTERACTIVE PREVIEW</span><h2 id="iv-preview-title">Preview cerita</h2></div><button type="button" class="iv-button" data-close aria-label="Tutup preview">×</button></div><video id="iv-player" controls playsinline preload="metadata"></video><p id="iv-player-message" role="status"></p><div id="iv-player-choices"></div><div class="iv-preview-bottom"><span id="iv-player-scene"></span><button type="button" class="iv-button" id="iv-restart">Ulang dari awal</button></div></dialog>
+<dialog id="iv-delete-dialog" class="iv-confirm-dialog" aria-labelledby="iv-delete-title"><h2 id="iv-delete-title">Hapus scene ini?</h2><p id="iv-delete-description"></p><p>Semua cabang yang menuju scene ini juga dihapus. Video asli di Media Library tetap aman.</p><div><button type="button" class="iv-button" data-close autofocus>Batal</button><button type="button" class="iv-button iv-danger" id="iv-confirm-delete">Hapus scene</button></div></dialog>
+<script type="application/json" id="iv-data"><?= json_encode($editorData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) ?></script>

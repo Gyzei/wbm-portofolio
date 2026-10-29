@@ -1,0 +1,30 @@
+*{box-sizing:border-box}
+body.login-page{margin:0;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:32px 20px;background:radial-gradient(ellipse at 15% 10%,#e2f4fb,transparent 50%),radial-gradient(ellipse at 90% 90%,#e8f6fc,transparent 45%),var(--sand);color:var(--ink);font:14px/1.6 "DM Sans",sans-serif}
+.login-card{width:100%;max-width:440px;padding:36px;border:1px solid var(--line);border-radius:16px;background:var(--paper);box-shadow:0 12px 40px rgba(18,55,78,.06);animation:login-enter .35s ease both}
+.login-brand{margin-bottom:24px;color:var(--accent-deep);font-size:12px;font-weight:700;letter-spacing:.04em}
+.login-card h1{margin:0 0 10px;font:700 27px/1.3 "Playfair Display",serif;letter-spacing:-.3px}
+.login-card>p{margin:0 0 26px;color:var(--muted);font-size:13px;line-height:1.7}
+.login-form{display:grid;gap:8px}
+.login-form label{color:var(--muted);font-size:12px;font-weight:600}
+.login-form input{width:100%;height:42px;padding:10px 12px;margin-bottom:10px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);font:14px "DM Sans",sans-serif;transition:border-color .15s,box-shadow .15s}
+.login-form input::placeholder{color:#8a9fae;font-size:13px}
+.login-form input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.login-password-field{position:relative;margin-bottom:10px}
+.login-password-field input{padding-right:46px;margin-bottom:0}
+.password-toggle{position:absolute;right:4px;top:4px;display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer}
+.password-toggle:hover{background:var(--accent-soft);color:var(--accent-deep)}
+.password-toggle svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.password-toggle [hidden]{display:none!important}
+.btn-login{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:42px;margin-top:8px;padding:10px 16px;border:1px solid var(--accent);border-radius:9px;background:var(--accent);color:#fff;font:600 13px "DM Sans",sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
+.btn-login:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+.btn-login svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.login-error{margin-bottom:20px;padding:12px 14px;border:1px solid #efc3bf;border-radius:10px;background:#fff1f0;color:#a33227;font-size:12px;line-height:1.6}
+.login-back{display:block;margin-top:26px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);text-align:center;text-decoration:none;font-size:12px;font-weight:500}
+.login-back:hover{color:var(--accent-deep)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@keyframes login-enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){body.login-page{padding:20px 16px}.login-card{padding:28px 24px}.login-card h1{font-size:25px}}
+@media(prefers-reduced-motion:reduce){.login-card{animation:none}.login-form input,.btn-login{transition:none}}
+.login-card h1,.login-card>p{overflow-wrap:anywhere}
+@media(max-width:600px){.login-form input{font-size:16px}.btn-login{min-height:44px}.password-toggle{width:36px}}
+@media(max-height:620px){body.login-page{align-items:start;padding-top:24px;padding-bottom:24px}.login-card{margin:auto 0}}
