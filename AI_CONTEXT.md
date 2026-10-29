@@ -9,7 +9,6 @@ Interactive video supports separate scenarios; persistence passed 27 isolated-da
 ## TODO
 - [ ] Fix admin CSRF gaps, unsafe SVG uploads and project URL schemes; see [[docs/technical/REPOSITORY-AUDIT]].
 - [ ] Add login throttling.
-- [ ] Handle failed media database inserts without leaving uploaded files behind.
 - [ ] Verify scenario creation and switching in an authenticated browser at desktop and mobile widths.
 - [ ] Verify successful first-admin setup on a disposable database.
 - [ ] Confirm existing administrator password is not the former default before deployment.

@@ -203,10 +203,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_dir($dir)) mkdir($dir, 0775, true);
     $safe = preg_replace('/[^A-Za-z0-9._-]/', '_', $n);
     $path = $dir . bin2hex(random_bytes(16)) . '.' . $x;
+    require_once __DIR__ . '/dashboard/media-store.php';
     if (!move_uploaded_file($f['tmp_name'], $path)) back('media', 'invalid');
-    $q = $conn->prepare('INSERT INTO fileBrowser(fileName,fileAddress,created_at)VALUES(?,?,CURRENT_TIMESTAMP)');
-    $q->bind_param('ss', $safe, $path);
-    $q->execute();
+    try {
+      recordUploadedMedia($conn, $safe, $path);
+    } catch (Throwable $error) {
+      error_log('Media upload: ' . $error->getMessage());
+      back('media', 'uploadfailed');
+    }
     back('media', 'uploaded');
   }
   if ($a === 'renamemedia') {
@@ -288,7 +292,7 @@ $edit = null;
 $highlightEdit = null;
 if (isset($_GET['highlight_edit'])) foreach ($slides as $slide) if ($slide['id'] == (int)$_GET['highlight_edit']) $highlightEdit = $slide;
 if (isset($_GET['edit'])) foreach ($page === 'slides' ? $slides : $projects as $x) if ($x['id'] == (int)$_GET['edit']) $edit = $x;
-$msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil dihapus.', 'uploaded' => 'Media berhasil diunggah.', 'invalid' => 'Periksa data wajib atau format file.', 'exists' => 'Username sudah digunakan.', 'inuse' => 'Video masih digunakan oleh scene. Lepaskan video di editor Video Interaktif dan simpan terlebih dahulu.', 'deletefailed' => 'Media belum dapat dihapus. Periksa file atau koneksi database, lalu coba lagi.', 'projectdeletefailed' => 'Project dan highlight belum dapat dihapus. Coba lagi.', 'cleanupfailed' => 'Entri media telah dihapus, tetapi file fisik belum terhapus. Periksa log server untuk membersihkan file tersebut.'];
+$msgs = ['saved' => 'Perubahan berhasil disimpan.', 'deleted' => 'Data berhasil dihapus.', 'uploaded' => 'Media berhasil diunggah.', 'uploadfailed' => 'Media belum dapat disimpan. Periksa koneksi database dan log server, lalu coba lagi.', 'invalid' => 'Periksa data wajib atau format file.', 'exists' => 'Username sudah digunakan.', 'inuse' => 'Video masih digunakan oleh scene. Lepaskan video di editor Video Interaktif dan simpan terlebih dahulu.', 'deletefailed' => 'Media belum dapat dihapus. Periksa file atau koneksi database, lalu coba lagi.', 'projectdeletefailed' => 'Project dan highlight belum dapat dihapus. Coba lagi.', 'cleanupfailed' => 'Entri media telah dihapus, tetapi file fisik belum terhapus. Periksa log server untuk membersihkan file tersebut.'];
 ?>
 <!doctype html>
 <html lang="id">
